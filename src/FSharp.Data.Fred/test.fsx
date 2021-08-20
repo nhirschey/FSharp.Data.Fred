@@ -1,5 +1,5 @@
 
-#r "bin/debug/net5.0/FSharp.Data.Fred.dll"
+#r "bin/Release/net5.0/FSharp.Data.Fred.dll"
 #r "nuget: FSharp.Data"
 #r "nuget: Plotly.NET,2.0.0-preview.6"
 

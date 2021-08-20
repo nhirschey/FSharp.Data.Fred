@@ -2,6 +2,17 @@
 
 open FSharp.Data
 
+
+/// <summary>
+///   A module
+/// </summary>
+///
+/// <namespacedoc>
+///   <summary>A namespace to remember</summary>
+///
+///   <remarks>More on that</remarks>
+/// </namespacedoc>
+///
 module Fred =
     type Series = CsvProvider<Sample="Date (date),Value (float)",
                               MissingValues=".">

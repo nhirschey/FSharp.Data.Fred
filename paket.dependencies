@@ -1,0 +1,31 @@
+source https://api.nuget.org/v3/index.json
+
+storage: none
+framework: net5.0, netstandard2.1
+nuget coverlet.collector 3.0.2
+nuget FSharp.Core content: none
+nuget FSharp.Data 4.2.2
+nuget FsUnit
+nuget Microsoft.NET.Test.Sdk 16.9.4
+nuget NUnit 3.13.1
+nuget NUnit3TestAdapter 3.17.0
+
+// [ FAKE GROUP ]
+group Build
+  source https://api.nuget.org/v3/index.json
+
+  framework: netstandard2.0
+  storage: none
+
+  nuget Fake.Core.Target
+  nuget Fake.Core.Process
+  nuget Fake.DotNet.Cli
+  nuget Fake.Core.ReleaseNotes
+  nuget Fake.DotNet.AssemblyInfoFile
+  nuget Fake.DotNet.Paket
+  nuget Fake.Tools.Git
+  nuget Fake.Core.Environment
+  nuget Fake.Core.UserInput
+  nuget Fake.IO.FileSystem
+  nuget Fake.DotNet.MsBuild
+  nuget Fake.Api.GitHub

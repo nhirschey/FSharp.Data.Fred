@@ -349,3 +349,11 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 secrets.fsx
+
+#Paket dependency manager
+.paket/
+paket-files/
+
+# fsdocs
+tmp/
+.fsdocs/cache
