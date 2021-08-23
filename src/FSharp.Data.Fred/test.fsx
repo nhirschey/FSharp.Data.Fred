@@ -1,5 +1,7 @@
 
-#r "bin/Release/net5.0/FSharp.Data.Fred.dll"
+#I "bin/Debug"
+#I "bin/Release"
+#r "net5.0/FSharp.Data.Fred.dll"
 #r "nuget: FSharp.Data"
 #r "nuget: Plotly.NET,2.0.0-preview.6"
 
@@ -23,23 +25,3 @@ let chart1y10y =
 chart1y10y |> Chart.Show
 
 
-#load "../../secrets.fsx"
-
-let categoryId = 125
-let jsonUrl categoryId apiKey = 
-    $"https://api.stlouisfed.org/fred/category/series?category_id={categoryId}&api_key={apiKey}&file_type=json"
-
-(*
-type Category = JsonProvider<>
-
-let categories = Category.GetSample()
-categories.Seriess
-*)
-
-let wb = WorldBankData.GetDataContext()
-
-let x = wb.Countries.Portugal.Indicators.``GDP (constant 2010 US$)``
-
-x
-|> Chart.Line
-|> Chart.Show
