@@ -1,0 +1,28 @@
+<Project>
+  <Import Condition="Exists('version.props')" Project="version.props" />
+  <PropertyGroup>
+    <!-- Include PDBs in Nuget package. -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>.pdb; $(AllowedOutputExtensionsInPackageBuildOutputFolder)</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <!-- Copy all project dependencies to bin folder -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <OtherFlags>/warnon:1182</OtherFlags>
+  </PropertyGroup>
+
+  <!-- NuGet Metadata -->
+  <PropertyGroup>
+    <!-- To require explicitly enabling IsPackable at individual project files -->
+    <!-- <IsPackable>false</IsPackable> -->
+    <Description>
+      "A wrapper around the Fedederal Reserve Economic Data (FRED) API."
+    </Description>
+    <Authors></Authors>
+    <Copyright>Copyright 2021</Copyright>
+    <PackageTags>F# fsharp data fred</PackageTags>
+    <RepositoryUrl>https://github.com/nhirschey/FSharp.Data.Fred</RepositoryUrl>
+    <PackageProjectUrl>https://nhirschey.github.io/FSharp.Data.Fred</PackageProjectUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+</Project>
