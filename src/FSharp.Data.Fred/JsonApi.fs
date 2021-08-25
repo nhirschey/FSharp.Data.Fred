@@ -1,38 +1,7 @@
-
-#r "nuget: FSharp.Data"
-#r "nuget: Plotly.NET,2.0.0-preview.6"
+module FSharp.Data.Fred.JsonApi
 
 open FSharp.Data
-open Plotly.NET
 
-
-let fredApi = "keyhere"
-
-
-(*
-expects secrets.fsx to look like:
-let fredApi = "keyhere"
-but replace keyhere with your api key.
-*)
-#load "../../secrets.fsx"
-
-(* 
-open FSharp.Data.JsonExtensions
-let interestRates = 
-    Http.RequestString($"https://api.stlouisfed.org/fred/series/search?search_text=10+year+rate&api_key={fredApi}&file_type=json", 
-                       headers = [ HttpRequestHeaders.UserAgent "FSharp.Data WorldBank Type Provider" 
-                                   HttpRequestHeaders.Accept HttpContentTypes.Json ])
-    |> JsonValue.Parse
-
-interestRates?seriess.[0]
-match interestRates?seriess with
-| JsonValue.Array seriess ->
-    for series in seriess |> Array.truncate 20 do
-        let title = series?title.AsString().Replace("\"","")
-        let id = series?id.AsString().Replace("\"","")
-        printfn $"{title} ({id})"
-| _ -> failwith "nope"
-*)
 type SearchType = FullText | SeriesId
 
 let [<Literal>] SearchResponseSample = """
@@ -140,34 +109,10 @@ type SearchResponse = JsonProvider<SearchResponseSample>
 type SeriesResponse = JsonProvider<SeriesSample>
 type SeriesObservationsResponse = JsonProvider<SeriesObservationsSample>
 
-(*
-type SeriesInfo(id:string) =
-    let response =
-        Http.RequestString($"https://api.stlouisfed.org/fred/series?series_id={id.ToUpper()}&api_key={fredApi}&file_type=json",
-                       headers = [ HttpRequestHeaders.UserAgent "FSharp.Data WorldBank Type Provider" 
-                                   HttpRequestHeaders.Accept HttpContentTypes.Json ])
-        |> SeriesResponse.Parse
-    member this.Info = response.Seriess |> Seq.head
-
-type SeriesObservations(id:string) =
-    let response =
-        Http.RequestString($"https://api.stlouisfed.org/fred/series/observations?series_id={id.ToUpper()}&api_key={fredApi}&file_type=json",
-                       headers = [ HttpRequestHeaders.UserAgent "FSharp.Data.Fred" 
-                                   HttpRequestHeaders.Accept HttpContentTypes.Json ])
-        |> SeriesObservationsResponse.Parse
-    member this.Results = response
-
-let xx = SeriesInfo("GS10")
-xx.Info
-let xxx = SeriesObservations("DGS10")
-xxx.Results
-xxx.Results.Observations
-xxx.Results.Observations
-|> Seq.take 5
-|> Seq.map(fun x -> x.Value)
-*)
-
 (**
+
+API interface ideas?
+
 Fred.download
 Fred.searchIds
 Fred.searchFullText
@@ -239,7 +184,8 @@ module Series =
                 let freq = series.Frequency
                 printfn $"""%3i{i}. {series.Title} """
                 printfn $"         Id: %-10s{series.Id} Period: {sd} to {ed}  Freq: {freq} \n" 
-    type series(key:string) =
+    and series(key:string) =
+        do if key = "" then failwith "Provide an API key"
         member this.info(id:string) = 
             Helpers.request key "series" [ "series_id", id.ToUpper() ]
             |> SeriesResponse.Parse
@@ -249,76 +195,11 @@ module Series =
         member this.search(searchText:string,?searchType:SearchType,?limit:int) = 
             search(key, searchText=searchText, ?searchType=searchType, ?limit=limit)
 
-
-
-
-type Fred(key:string) =
-    do Config.apiKey <- key
+type Fred1(key:string) =
     member this.series = Series.series(key)
 
-let fred = Fred(Secrets.fredApi)
 
-// normal .NET would be fred.Series.Info("GS10")
-fred.series.info("GS10")
+type fred2 =
+    static member config(key:string) = Config.apiKey <- key
+    static member series = Series.series(Config.apiKey)
 
-// normal .NET would be fred.Series.Search("10-year", limit=5)
-let search = fred.series.search("10-year", limit=5)
-search.Summary()
-
-// normal .NET would be fred.Series.Observations("GS10")
-let obs = fred.series.observations("GS10")
-
-obs.Observations
-|> Seq.take 5
-|> Seq.averageBy(fun x -> x.Value)
-
-
-
-type search(key:string,searchText:string,?searchType:SearchType,?limit:int) =
-    let searchType = 
-        match defaultArg searchType SearchType.FullText with
-        | FullText -> "full_text"
-        | SeriesId -> "series_id"
-    let limit = defaultArg limit 20
-    let searchText = System.Uri.EscapeUriString(searchText)
-    let searchRequest = 
-        let queryParameters = [
-            "search_text", searchText
-            "search_type", searchType 
-            "limit", string limit
-        ]
-        Helpers.request key "series/search" queryParameters
-        |> SearchResponse.Parse
-    member this.Results = searchRequest
-    member this.Summary(?n:int) =
-        let shortDate (dt: System.DateTime) = dt.ToString("yyyy-MM-dd")
-        // Currently if given n > limit then the returns search summary
-        // will be less than n. Probably should print something for the user
-        // so that they know why they're getting less than n results.
-        let n = min searchRequest.Seriess.Length (defaultArg n  10)
-        printfn $"Count of search hits: {this.Results.Count}"
-        printfn $"Top {n} results:"
-        let limitedResults = searchRequest.Seriess |> Seq.truncate n |> Seq.mapi (fun i x -> i+1, x)
-        for i, series in limitedResults do
-            let sd = shortDate series.ObservationStart
-            let ed = shortDate series.ObservationEnd
-            let freq = series.Frequency
-            printfn $"""%3i{i}. {series.Title} """
-            printfn $"         Id: %-10s{series.Id} Period: {sd} to {ed}  Freq: {freq} \n" 
-and Series(key:string) =
-    member this.Info(id:string) = 
-        Helpers.request key "series" [ "series_id", id.ToUpper() ]
-        |> SeriesResponse.Parse
-    member this.observations(id:string) =
-        Helpers.request key "series/observations" [ "series_id", id.ToUpper() ]
-        |> SeriesObservationsResponse.Parse
-    member this.search(searchText:string,?searchType:SearchType,?limit:int) = 
-        search(key, searchText=searchText, ?searchType=searchType, ?limit=limit)
-and Fred2(key:string) =
-    member this.Series = Series(key)
-
-let fred2 = Fred2(Secrets.fredApi)
-
-// normal .NET would be fred.Series.Info("GS10")
-
-fred.series.info("GS10")
