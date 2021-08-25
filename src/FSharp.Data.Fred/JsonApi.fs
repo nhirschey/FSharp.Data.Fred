@@ -1,5 +1,7 @@
+[<AutoOpen>]
 module FSharp.Data.Fred.JsonApi
 
+open System
 open FSharp.Data
 
 type SearchType = FullText | SeriesId
@@ -105,9 +107,27 @@ let [<Literal>] SeriesObservationsSample = """
         }
     ]}"""
 
+let [<Literal>] SeriesCategoriesSample = """
+{
+    "categories": [
+        {
+            "id": 95,
+            "name": "Monthly Rates",
+            "parent_id": 15
+        },
+        {
+            "id": 275,
+            "name": "Japan",
+            "parent_id": 158
+        }
+    ]
+}
+"""
+
 type SearchResponse = JsonProvider<SearchResponseSample>
 type SeriesResponse = JsonProvider<SeriesSample>
 type SeriesObservationsResponse = JsonProvider<SeriesObservationsSample>
+type SeriesCategoriesResponse = JsonProvider<SeriesCategoriesSample>
 
 (**
 
@@ -126,34 +146,15 @@ fred.search
  - Observations
 *)
 
-module Config =
-
-    /// <summary>
-    /// Should be set to your key for the FRED API.
-    /// </summary>
-    /// <example>
-    /// <code>
-    /// fred.config("your-api-key")
-    /// Config.apiKey // evaluates to "your-api-key"
-    /// </code>
-    /// </example>
-    /// <returns>API key</returns>
-    let mutable apiKey = ""
-
 module internal Helpers =
     let request key endpoint query =
         Http.RequestString($"https://api.stlouisfed.org/fred/{endpoint}?",
                    query = query @ [ "api_key", key; "file_type", "json"], 
                    headers = [ HttpRequestHeaders.UserAgent "FSharp.Data.Fred" 
                                HttpRequestHeaders.Accept HttpContentTypes.Json ])
-    let request2 endpoint query =
-        Http.RequestString($"https://api.stlouisfed.org/fred/{endpoint}?",
-                   query = query @ [ "api_key", Config.apiKey; "file_type", "json"], 
-                   headers = [ HttpRequestHeaders.UserAgent "FSharp.Data.Fred" 
-                               HttpRequestHeaders.Accept HttpContentTypes.Json ])
 
 module Series =
-    type search(key:string,searchText:string,?searchType:SearchType,?limit:int) =
+    type Search(key:string,searchText:string,?searchType:SearchType,?limit:int) =
         let searchType = 
             match defaultArg searchType SearchType.FullText with
             | FullText -> "full_text"
@@ -184,22 +185,33 @@ module Series =
                 let freq = series.Frequency
                 printfn $"""%3i{i}. {series.Title} """
                 printfn $"         Id: %-10s{series.Id} Period: {sd} to {ed}  Freq: {freq} \n" 
-    and series(key:string) =
-        do if key = "" then failwith "Provide an API key"
-        member this.info(id:string) = 
+    and Series(key:string) =
+        member this.Info(id:string) = 
             Helpers.request key "series" [ "series_id", id.ToUpper() ]
             |> SeriesResponse.Parse
-        member this.observations(id:string) =
+        member this.Observations(id:string) =
             Helpers.request key "series/observations" [ "series_id", id.ToUpper() ]
             |> SeriesObservationsResponse.Parse
-        member this.search(searchText:string,?searchType:SearchType,?limit:int) = 
-            search(key, searchText=searchText, ?searchType=searchType, ?limit=limit)
+        member this.Search(searchText:string,?searchType:SearchType,?limit:int) = 
+            Search(key, searchText=searchText, ?searchType=searchType, ?limit=limit)
+        member this.Categories(id:string,?realtimeStart:DateTime,?realtimeEnd:DateTime) =
+            let realtimeStart = 
+                let dt = defaultArg realtimeStart DateTime.Now
+                dt.ToString("yyyy-MM-dd")
+            let realtimeEnd =
+                let dt = defaultArg realtimeEnd DateTime.Now
+                dt.ToString("yyyy-MM-dd")
+            let queryParameters = [
+                "series_id", id.ToUpper()
+                "realtime_start", realtimeStart
+                "realtime_end", realtimeEnd
+            ]
+            Helpers.request key "series/categories" queryParameters
+            |> SeriesCategoriesResponse.Parse
 
-type Fred1(key:string) =
-    member this.series = Series.series(key)
+type Fred(key:string) =
+    member this.Series = Series.Series(key)
+    
 
 
-type fred2 =
-    static member config(key:string) = Config.apiKey <- key
-    static member series = Series.series(Config.apiKey)
 
