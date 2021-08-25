@@ -14,7 +14,7 @@ expects secrets.fsx to look like:
 let fredApi = "keyhere"
 but replace keyhere with your api key.
 *)
-//#load "../../secrets.fsx"
+#load "../../secrets.fsx"
 
 (* 
 open FSharp.Data.JsonExtensions
@@ -140,7 +140,7 @@ type SearchResponse = JsonProvider<SearchResponseSample>
 type SeriesResponse = JsonProvider<SeriesSample>
 type SeriesObservationsResponse = JsonProvider<SeriesObservationsSample>
 
-
+(*
 type SeriesInfo(id:string) =
     let response =
         Http.RequestString($"https://api.stlouisfed.org/fred/series?series_id={id.ToUpper()}&api_key={fredApi}&file_type=json",
@@ -165,6 +165,7 @@ xxx.Results.Observations
 xxx.Results.Observations
 |> Seq.take 5
 |> Seq.map(fun x -> x.Value)
+*)
 
 (**
 Fred.download
@@ -180,28 +181,48 @@ fred.search
  - Observations
 *)
 
-module fred2 =
-    (*
-    // class alternative to record, but shouldn't change structure frequently
-    // so probably ok to leave as record or tuple. 
-    type SeriesObservation (date:System.DateTime,value:float) =
-        member this.Date = date
-        member this.Value = value
-    *)
-    type search(searchText:string,?searchType:SearchType,?limit:int) =
+module Config =
+
+    /// <summary>
+    /// Should be set to your key for the FRED API.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// fred.config("your-api-key")
+    /// Config.apiKey // evaluates to "your-api-key"
+    /// </code>
+    /// </example>
+    /// <returns>API key</returns>
+    let mutable apiKey = ""
+
+module internal Helpers =
+    let request key endpoint query =
+        Http.RequestString($"https://api.stlouisfed.org/fred/{endpoint}?",
+                   query = query @ [ "api_key", key; "file_type", "json"], 
+                   headers = [ HttpRequestHeaders.UserAgent "FSharp.Data.Fred" 
+                               HttpRequestHeaders.Accept HttpContentTypes.Json ])
+    let request2 endpoint query =
+        Http.RequestString($"https://api.stlouisfed.org/fred/{endpoint}?",
+                   query = query @ [ "api_key", Config.apiKey; "file_type", "json"], 
+                   headers = [ HttpRequestHeaders.UserAgent "FSharp.Data.Fred" 
+                               HttpRequestHeaders.Accept HttpContentTypes.Json ])
+
+module Series =
+    type search(key:string,searchText:string,?searchType:SearchType,?limit:int) =
         let searchType = 
             match defaultArg searchType SearchType.FullText with
             | FullText -> "full_text"
             | SeriesId -> "series_id"
         let limit = defaultArg limit 20
         let searchText = System.Uri.EscapeUriString(searchText)
-        let searchRequest =
-            Http.RequestString($"https://api.stlouisfed.org/fred/series/search?search_text={searchText}&api_key={fredApi}&file_type=json",
-                           query = [ "search_type", searchType
-                                     "limit", string limit], 
-                           headers = [ HttpRequestHeaders.UserAgent "FSharp.Data WorldBank Type Provider" 
-                                       HttpRequestHeaders.Accept HttpContentTypes.Json ])
-            |> SearchResponse.Parse 
+        let searchRequest = 
+            let queryParameters = [
+                "search_text", searchText
+                "search_type", searchType 
+                "limit", string limit
+            ]
+            Helpers.request key "series/search" queryParameters
+            |> SearchResponse.Parse
         member this.Results = searchRequest
         member this.Summary(?n:int) =
             let shortDate (dt: System.DateTime) = dt.ToString("yyyy-MM-dd")
@@ -213,91 +234,41 @@ module fred2 =
             printfn $"Top {n} results:"
             let limitedResults = searchRequest.Seriess |> Seq.truncate n |> Seq.mapi (fun i x -> i+1, x)
             for i, series in limitedResults do
+                let sd = shortDate series.ObservationStart
+                let ed = shortDate series.ObservationEnd
+                let freq = series.Frequency
                 printfn $"""%3i{i}. {series.Title} """
-                printfn $"         Id: %-10s{series.Id} Period: {shortDate series.ObservationStart} to {shortDate series.ObservationEnd}  Freq: {series.Frequency} \n"
+                printfn $"         Id: %-10s{series.Id} Period: {sd} to {ed}  Freq: {freq} \n" 
+    type series(key:string) =
+        member this.info(id:string) = 
+            Helpers.request key "series" [ "series_id", id.ToUpper() ]
+            |> SeriesResponse.Parse
+        member this.observations(id:string) =
+            Helpers.request key "series/observations" [ "series_id", id.ToUpper() ]
+            |> SeriesObservationsResponse.Parse
+        member this.search(searchText:string,?searchType:SearchType,?limit:int) = 
+            search(key, searchText=searchText, ?searchType=searchType, ?limit=limit)
 
 
-    type SeriesObservation = { Date: System.DateTime; Value : float}
-    type downloadvRecord(id:string) =
-        let observations = SeriesObservations(id)
-        let info = SeriesInfo(id).Info
-        member this.Info = info
-        member this.Observations = 
-            observations.Results.Observations
-            |> Seq.map(fun x -> { Date = x.Date; Value = x.Value })
-    
-    // I probably prefer this version because returning a tuple of DateTime * float
-    // is a bit simpler data structure. But will people used to pandas be confused
-    // by the tuple vs. being able to do x.Date and x.Value?
-    // 
-    // this.Info is a json value. Is this confusing? Would it be better
-    // to extract all the info info as we've done here with this.Title?
-    type downloadvTuple(id:string) =
-        let observations = SeriesObservations(id)
-        let info = SeriesInfo(id).Info
-        member this.Info = info
-        member this.Title = info.Title
-        member this.Observations = 
-            observations.Results.Observations
-            |> Seq.map(fun x -> x.Date, x.Value )
 
-    let downloadvJson (id:string) =
-        SeriesObservations(id).Results
-        
 
-// Code to experiemnt with API access begins here.
+type Fred(key:string) =
+    do Config.apiKey <- key
+    member this.series = Series.series(key)
 
-fsi.AddPrinter<System.DateTime>(fun x -> x.ToString("yyyy-MM-dd"))
+let fred = Fred(Secrets.fredApi)
 
-let v3 = fred2.downloadvRecord "GS10"
-v3.Info
-v3.Observations
-|> Seq.take 6
-|> Seq.map(fun x -> x.Date, x.Value)
+// normal .NET would be fred.Series.Info("GS10")
+fred.series.info("GS10")
 
-let v4 = fred2.downloadvTuple "DGS10"
-v4.Title
-v4.Observations 
-|> Seq.take 6
+// normal .NET would be fred.Series.Search("10-year", limit=5)
+let search = fred.series.search("10-year", limit=5)
+search.Summary()
 
-let x = fred2.search("constant maturity")
-x.Summary(30)
-let x2 = fred2.search "10-year treasury"
-x2.Summary()
+// normal .NET would be fred.Series.Observations("GS10")
+let obs = fred.series.observations("GS10")
 
-x.Results.Seriess
-|> Seq.map(fun x -> x.Id, x.Title)
-let searchExample = fred2.search("constant maturity")
-searchExample.Results.Seriess |> Seq.take 5
-searchExample.Summary()
-
-let idSearch = fred2.search("gs10",searchType=SearchType.SeriesId,limit=10)
-idSearch.Summary()
-
-let vRecord = fred2.downloadvRecord("GS10")
-
-vRecord.Observations
-|> Seq.take 5
-
-vRecord.Observations
+obs.Observations
 |> Seq.take 5
 |> Seq.averageBy(fun x -> x.Value)
 
-let vTuple = fred2.downloadvTuple("GS10")
-
-vTuple.Observations
-|> Seq.take 5
-
-vTuple.Observations
-|> Seq.take 5
-|> Seq.averageBy(fun (dt, value) -> value)
-
-
-let vJson = fred2.downloadvJson("GS10")
-
-vJson.Observations
-|> Seq.take 5
-
-vJson.Observations
-|> Seq.take 5
-|> Seq.averageBy(fun x -> x.Value)
