@@ -18,10 +18,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Restore tools
+    - name: Restore .NET local tools
       run: dotnet tool restore
-    - name: Run fsdocs
-      run: dotnet fsdocs build --eval --properties Configuration=Release
+    - name: Restore packages
+      run: dotnet paket restore
+    - name: Build and test
+      run: dotnet fake build -t All
     - name: Deploy docs
       uses: peaceiris/actions-gh-pages@v3
       with:
