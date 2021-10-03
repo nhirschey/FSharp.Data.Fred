@@ -10,9 +10,7 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Data.Fred">
-      <HintPath>../../src/FSharp.Data.Fred/bin/Debug/net5.0/FSharp.Data.Fred.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\src\FSharp.Data.Fred\FSharp.Data.Fred.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
