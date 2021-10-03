@@ -69,6 +69,7 @@ Target.create "Clean" (fun _ ->
     ++ "src/*/bin"
     ++ "temp"
     ++ ".fsdocs"
+    ++ "tmp"
     |> Shell.cleanDirs
     // in case the above pattern is empty as it only matches existing stuff
     ["bin"; "temp"; "tests/bin"]
