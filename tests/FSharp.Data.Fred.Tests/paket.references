@@ -4,3 +4,4 @@ NUnit3TestAdapter
 coverlet.collector
 FSharp.Core
 FsUnit
+FSharp.Data

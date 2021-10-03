@@ -1,0 +1,33 @@
+name: Build and Test PR
+
+on:
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  
+  build:
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest,windows-latest,ubuntu-latest]
+
+    env: 
+      FRED_KEY: ${{ secrets.FRED_KEY }}     
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.200
+    - name: Restore .NET local tools
+      run: dotnet tool restore
+    - name: Restore packages
+      run: dotnet paket restore
+    - name: Build and test
+      run: dotnet fake build -t All

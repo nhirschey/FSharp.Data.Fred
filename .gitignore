@@ -360,3 +360,4 @@ tmp/
 output
 src/FSharp.Data.Fred/AssemblyInfo.fs
 version.props
+fredKey.json
