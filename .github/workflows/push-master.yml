@@ -34,4 +34,4 @@ jobs:
     - name: Examine artifacts
       run: ls -r artifacts
     - name: Publish NuGets (if this version not published before)
-      run: dotnet nuget push artifacts\FSharp.Data.Fred.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} --skip-duplicate
+      run: dotnet nuget push artifacts/FSharp.Data.Fred.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} --skip-duplicate
