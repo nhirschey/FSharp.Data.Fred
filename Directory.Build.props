@@ -14,14 +14,14 @@
     <!-- To require explicitly enabling IsPackable at individual project files -->
     <!-- <IsPackable>false</IsPackable> -->
     <Description>
-      "A wrapper around the Fedederal Reserve Economic Data (FRED) API."
+      "A wrapper around the Federal Reserve Economic Data (FRED) API."
     </Description>
     <Authors></Authors>
     <Copyright>Copyright 2021</Copyright>
     <PackageTags>F# fsharp data fred</PackageTags>
     <RepositoryUrl>https://github.com/nhirschey/FSharp.Data.Fred</RepositoryUrl>
     <PackageProjectUrl>https://nhirschey.github.io/FSharp.Data.Fred</PackageProjectUrl>
-    <PackageIconUrl></PackageIconUrl>
+    <PackageIconUrl>https://github.com/nhirschey/FSharp.Data.Fred/tree/main/docs/img/logo.png</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>

@@ -6,9 +6,7 @@ module JsonApi =
     open System
     open FSharp.Data
 
-    [<Literal>]
-    let KeyFileSample = """ { "fredKey": "key here in the actual file to be named fredKey.json"} """
-    type KeyFile = JsonProvider<KeyFileSample>
+    type KeyFile = JsonProvider<EmbeddedResources.KeyFileSample>
 
     type SearchType = FullText | SeriesId
 
@@ -86,178 +84,12 @@ module JsonApi =
         | Name
         | GroupId
 
-    let [<Literal>] SearchResponseSample = """
-    {
-      "realtime_start": "2017-08-01",
-      "realtime_end": "2017-08-01",
-      "order_by": "search_rank",
-      "sort_order": "desc",
-      "count": 32,
-      "offset": 0,
-      "limit": 1000,
-      "seriess": [
-        {
-          "id": "MSIM2",
-          "realtime_start": "2017-08-01",
-          "realtime_end": "2017-08-01",
-          "title": "Monetary Services Index: M2 (preferred)",
-          "observation_start": "1967-01-01",
-          "observation_end": "2013-12-01",
-          "frequency": "Monthly",
-          "frequency_short": "M",
-          "units": "Billions of Dollars",
-          "units_short": "Bil. of $",
-          "seasonal_adjustment": "Seasonally Adjusted",
-          "seasonal_adjustment_short": "SA",
-          "last_updated": "2014-01-17 07:16:44-06",
-          "popularity": 34,
-          "group_popularity": 33,
-          "notes": "The MSI measure the flow of monetary services received each period by households and firms from their holdings of monetary assets (levels of the indexes are sometimes referred to as Divisia monetary aggregates).\nPreferred benchmark rate equals 100 basis points plus the largest rate in the set of rates.\nAlternative benchmark rate equals the larger of the preferred benchmark rate and the Baa corporate bond yield.\nMore information about the new MSI can be found at\nhttp:\/\/research.stlouisfed.org\/msi\/index.html."
-        },
-        {
-          "id": "MSIM1P",
-          "realtime_start": "2017-08-01",
-          "realtime_end": "2017-08-01",
-          "title": "Monetary Services Index: M1 (preferred)",
-          "observation_start": "1967-01-01",
-          "observation_end": "2013-12-01",
-          "frequency": "Monthly",
-          "frequency_short": "M",
-          "units": "Billions of Dollars",
-          "units_short": "Bil. of $",
-          "seasonal_adjustment": "Seasonally Adjusted",
-          "seasonal_adjustment_short": "SA",
-          "last_updated": "2014-01-17 07:16:45-06",
-          "popularity": 26,
-          "group_popularity": 26,
-          "notes": "The MSI measure the flow of monetary services received each period by households and firms from their holdings of monetary assets (levels of the indexes are sometimes referred to as Divisia monetary aggregates)."
-        }]}"""
-
-    let [<Literal>] SeriesSample = """
-    {
-        "realtime_start": "2013-08-14",
-        "realtime_end": "2013-08-14",
-        "seriess": [
-            {
-                "id": "GNPCA",
-                "realtime_start": "2013-08-14",
-                "realtime_end": "2013-08-14",
-                "title": "Real Gross National Product",
-                "observation_start": "1929-01-01",
-                "observation_end": "2012-01-01",
-                "frequency": "Annual",
-                "frequency_short": "A",
-                "units": "Billions of Chained 2009 Dollars",
-                "units_short": "Bil. of Chn. 2009 $",
-                "seasonal_adjustment": "Not Seasonally Adjusted",
-                "seasonal_adjustment_short": "NSA",
-                "last_updated": "2013-07-31 09:26:16-05",
-                "popularity": 39,
-                "notes": "BEA Account Code: A001RX1"
-            }
-        ]
-    }
-    """
-    let [<Literal>] SeriesObservationsSample = """
-    {
-        "realtime_start": "2013-08-14",
-        "realtime_end": "2013-08-14",
-        "observation_start": "1776-07-04",
-        "observation_end": "9999-12-31",
-        "units": "lin",
-        "output_type": 1,
-        "file_type": "json",
-        "order_by": "observation_date",
-        "sort_order": "asc",
-        "count": 84,
-        "offset": 0,
-        "limit": 100000,
-        "observations": [
-            {
-                "realtime_start": "2013-08-14",
-                "realtime_end": "2013-08-14",
-                "date": "1929-01-01",
-                "value": "1065.9"
-            },
-            {
-                "realtime_start": "2013-08-14",
-                "realtime_end": "2013-08-14",
-                "date": "1930-01-01",
-                "value": "1e5"
-            }
-        ]}"""
-
-    let [<Literal>] SeriesCategoriesSample = """
-    {
-        "categories": [
-            {
-                "id": 95,
-                "name": "Monthly Rates",
-                "parent_id": 15
-            },
-            {
-                "id": 275,
-                "name": "Japan",
-                "parent_id": 158
-            }
-        ]
-    }
-    """
-
-    let [<Literal>] SeriesReleaseSample= """
-    {
-        "realtime_start": "2013-08-14",
-        "realtime_end": "2013-08-14",
-        "releases": [
-            {
-                "id": 21,
-                "realtime_start": "2013-08-14",
-                "realtime_end": "2013-08-14",
-                "name": "H.6 Money Stock Measures",
-                "press_release": true,
-                "link": "http://www.federalreserve.gov/releases/h6/"
-            }
-        ]
-    }
-    """
-
-    let [<Literal>] SeriesTagsSample = """
-    {
-        "realtime_start": "2013-08-14",
-        "realtime_end": "2013-08-14",
-        "order_by": "series_count",
-        "sort_order": "desc",
-        "count": 8,
-        "offset": 0,
-        "limit": 1000,
-        "tags": [
-            {
-                "name": "nation",
-                "group_id": "geot",
-                "notes": "Country Level",
-                "created": "2012-02-27 10:18:19-06",
-                "popularity": 100,
-                "series_count": 105200
-            },
-            {
-                "name": "stlfsi",
-                "group_id": "rls",
-                "notes": "St. Louis Financial Stress Index",
-                "created": "2012-08-16 15:21:17-05",
-                "popularity": 66,
-                "series_count": 1
-            }
-        ]
-    }
-    """
-
-
-    type SearchResponse = JsonProvider<SearchResponseSample>
-    type SeriesResponse = JsonProvider<SeriesSample>
-    type SeriesObservationsResponse = JsonProvider<SeriesObservationsSample>
-    type SeriesCategoriesResponse = JsonProvider<SeriesCategoriesSample>
-    type SeriesReleaseResponse = JsonProvider<SeriesReleaseSample>
-    type SeriesTagsResponse = JsonProvider<SeriesTagsSample>
+    type SearchResponse = JsonProvider<EmbeddedResources.SearchResponseSample>
+    type SeriesResponse = JsonProvider<EmbeddedResources.SeriesSample>
+    type SeriesObservationsResponse = JsonProvider<EmbeddedResources.SeriesObservationsSample>
+    type SeriesCategoriesResponse = JsonProvider<EmbeddedResources.SeriesCategoriesSample>
+    type SeriesReleaseResponse = JsonProvider<EmbeddedResources.SeriesReleaseSample>
+    type SeriesTagsResponse = JsonProvider<EmbeddedResources.SeriesTagsSample>
 
     (**
 
@@ -372,8 +204,12 @@ module JsonApi =
             /// <param name="id">The id for a series. String, required.</param>
             /// <returns>The information for an economic data series.</returns>
             member this.Info(id:string) = 
-                Helpers.request key "series" [ "series_id", id.ToUpper() ]
-                |> SeriesResponse.Parse
+                match key with
+                | "developer" -> 
+                    SeriesResponse.Parse(EmbeddedResources.SearchResponseSample)
+                | _ ->
+                    Helpers.request key "series" [ "series_id", id.ToUpper() ]
+                    |> SeriesResponse.Parse
 
             /// <summary>
             /// Get the observations or data values for an economic data series.
@@ -504,8 +340,12 @@ module JsonApi =
                     "frequency", frequency
                     "aggregation_method", aggMethod
                 ]
-                Helpers.request key "series/observations" queryParameters
-                |> SeriesObservationsResponse.Parse
+                match key with
+                | "developer" -> 
+                    SeriesObservationsResponse.Parse(EmbeddedResources.SeriesObservationsSample)
+                | _ ->
+                    Helpers.request key "series/observations" queryParameters
+                    |> SeriesObservationsResponse.Parse
                     
             /// <summary>
             /// Get economic data series that match search text.
@@ -576,8 +416,12 @@ module JsonApi =
                     "realtime_start", realtimeStart
                     "realtime_end", realtimeEnd
                 ]
-                Helpers.request key "series/categories" queryParameters
-                |> SeriesCategoriesResponse.Parse
+                match key with
+                | "developer" -> 
+                    SeriesCategoriesResponse.Parse(EmbeddedResources.SeriesCategoriesSample)
+                | _ ->
+                    Helpers.request key "series/categories" queryParameters
+                    |> SeriesCategoriesResponse.Parse
 
             /// <summary>
             /// Get the release for an economic data series.
@@ -604,8 +448,12 @@ module JsonApi =
                     "realtime_start", realtimeStart
                     "realtime_end", realtimeEnd
                 ]
-                Helpers.request key "series/release" queryParameters
-                |> SeriesReleaseResponse.Parse 
+                match key with
+                | "developer" -> 
+                    SeriesReleaseResponse.Parse(EmbeddedResources.SeriesReleaseSample)
+                | _ ->
+                    Helpers.request key "series/release" queryParameters
+                    |> SeriesReleaseResponse.Parse 
 
             /// <summary>
             /// Get the FRED tags for a series.
@@ -655,8 +503,12 @@ module JsonApi =
                     "order_by", orderBy
                     "sort_order", sortOrder
                 ]
-                Helpers.request key "series/tags" queryParameters
-                |> SeriesTagsResponse.Parse 
+                match key with
+                | "developer" -> 
+                    SeriesTagsResponse.Parse(EmbeddedResources.SeriesTagsSample)
+                | _ ->
+                    Helpers.request key "series/tags" queryParameters
+                    |> SeriesTagsResponse.Parse 
 
 
     /// <summary>
