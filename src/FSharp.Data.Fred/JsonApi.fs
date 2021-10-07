@@ -204,8 +204,12 @@ module JsonApi =
             /// <param name="id">The id for a series. String, required.</param>
             /// <returns>The information for an economic data series.</returns>
             member this.Info(id:string) = 
-                Helpers.request key "series" [ "series_id", id.ToUpper() ]
-                |> SeriesResponse.Parse
+                match key with
+                | "developer" -> 
+                    SeriesResponse.Parse(EmbeddedResources.SearchResponseSample)
+                | _ ->
+                    Helpers.request key "series" [ "series_id", id.ToUpper() ]
+                    |> SeriesResponse.Parse
 
             /// <summary>
             /// Get the observations or data values for an economic data series.
@@ -336,8 +340,12 @@ module JsonApi =
                     "frequency", frequency
                     "aggregation_method", aggMethod
                 ]
-                Helpers.request key "series/observations" queryParameters
-                |> SeriesObservationsResponse.Parse
+                match key with
+                | "developer" -> 
+                    SeriesObservationsResponse.Parse(EmbeddedResources.SeriesObservationsSample)
+                | _ ->
+                    Helpers.request key "series/observations" queryParameters
+                    |> SeriesObservationsResponse.Parse
                     
             /// <summary>
             /// Get economic data series that match search text.
@@ -408,8 +416,12 @@ module JsonApi =
                     "realtime_start", realtimeStart
                     "realtime_end", realtimeEnd
                 ]
-                Helpers.request key "series/categories" queryParameters
-                |> SeriesCategoriesResponse.Parse
+                match key with
+                | "developer" -> 
+                    SeriesCategoriesResponse.Parse(EmbeddedResources.SeriesCategoriesSample)
+                | _ ->
+                    Helpers.request key "series/categories" queryParameters
+                    |> SeriesCategoriesResponse.Parse
 
             /// <summary>
             /// Get the release for an economic data series.
@@ -436,8 +448,12 @@ module JsonApi =
                     "realtime_start", realtimeStart
                     "realtime_end", realtimeEnd
                 ]
-                Helpers.request key "series/release" queryParameters
-                |> SeriesReleaseResponse.Parse 
+                match key with
+                | "developer" -> 
+                    SeriesReleaseResponse.Parse(EmbeddedResources.SeriesReleaseSample)
+                | _ ->
+                    Helpers.request key "series/release" queryParameters
+                    |> SeriesReleaseResponse.Parse 
 
             /// <summary>
             /// Get the FRED tags for a series.
@@ -487,8 +503,12 @@ module JsonApi =
                     "order_by", orderBy
                     "sort_order", sortOrder
                 ]
-                Helpers.request key "series/tags" queryParameters
-                |> SeriesTagsResponse.Parse 
+                match key with
+                | "developer" -> 
+                    SeriesTagsResponse.Parse(EmbeddedResources.SeriesTagsSample)
+                | _ ->
+                    Helpers.request key "series/tags" queryParameters
+                    |> SeriesTagsResponse.Parse 
 
 
     /// <summary>
