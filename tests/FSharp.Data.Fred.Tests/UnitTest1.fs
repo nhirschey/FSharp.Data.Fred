@@ -10,13 +10,7 @@ open System.IO
 let envVars = System.Environment.GetEnvironmentVariables()
 [<Literal>]
 let KeyJson = __SOURCE_DIRECTORY__ + "../../../fredKey.json" 
-let apiKey = 
-    let var = "FRED_KEY"
-    if envVars.Contains var then 
-        envVars.[var] :?> string
-    elif File.Exists(KeyJson) then 
-        KeyFile.Load(KeyJson).FredKey
-    else "developer"
+let apiKey = Fred.DevKey(KeyJson)
 
 let tolerance = 1e-7
 

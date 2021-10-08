@@ -523,4 +523,11 @@ module JsonApi =
     /// </param>
     type Fred(key:string) =
         member this.Series = Series.Series(key)
-        
+        static member DevKey(keyFile:String) = 
+            let envVars = System.Environment.GetEnvironmentVariables()
+            let var = "FRED_KEY"
+            if envVars.Contains var then 
+                envVars.[var] :?> string
+            elif IO.File.Exists(keyFile) then 
+                KeyFile.Load(keyFile).FredKey
+            else "developer"
