@@ -1,4 +1,12 @@
+#if INTERACTIVE
+#r "nuget: FSharp.Data,4.2.3"
+#r "nuget: NUnit"
+#r "nuget: FsUnit"
+#r "../../src/FSharp.Data.Fred/bin/Debug/net5.0/FSharp.Data.Fred.dll"
+ignore <| FSharp.Data.WorldBankData.GetDataContext() // Force fsi to load F# Data
+#else
 module FSharp.Data.Fred.Tests
+#endif
 
 open NUnit.Framework
 open FSharp.Data
@@ -6,17 +14,13 @@ open FSharp.Data.Fred
 open FsUnit
 open System
 open System.IO
+//type x = JsonProvider<"""{"key":"hi"}""">
+//x.GetSample()
 
-let envVars = System.Environment.GetEnvironmentVariables()
 [<Literal>]
-let KeyJson = __SOURCE_DIRECTORY__ + "../../../fredKey.json" 
-let apiKey = 
-    let var = "FRED_KEY"
-    if envVars.Contains var then 
-        envVars.[var] :?> string
-    elif File.Exists(KeyJson) then 
-        KeyFile.Load(KeyJson).FredKey
-    else "developer"
+let KeyJson = __SOURCE_DIRECTORY__ + "/../../fredKey.json" 
+
+let apiKey = "developer"
 
 let tolerance = 1e-7
 
@@ -26,7 +30,6 @@ let Tests =
     match apiKey with 
     | "developer" ->
         let sampleFred = Fred "developer"
-
         //Sample Observations (Without API KEY)
         let seriesObservationTest = 
             sampleFred.Series.Observations ""
@@ -42,14 +45,18 @@ let Tests =
             CategoriesTestId = seriesCategoriesTest.Categories |> Array.map(fun x -> x.Id) |> Array.head, 95
             CategoriesTestName = seriesCategoriesTest.Categories |> Array.map(fun x -> x.Name) |> Array.head, "Monthly Rates"
             CategoriesTestParentId = seriesCategoriesTest.Categories |> Array.map(fun x -> x.ParentId) |> Array.head, 15
-            InfoTestTitle = seriesInfoTest.Seriess |> Array.map(fun x -> x.Title) |> Array.head, "Monetary Services Index: M2 (preferred)"
-            InfoTestFrequency = seriesInfoTest.Seriess |> Array.map(fun x -> x.Frequency) |> Array.head, "Monthly"
-            InfoTestUnits = seriesInfoTest.Seriess |> Array.map(fun x -> x.Units) |> Array.head, "Billions of Dollars"
-            InfoTestSeasonalAdjustment =  seriesInfoTest.Seriess |> Array.map(fun x -> x.SeasonalAdjustment) |> Array.head, "Seasonally Adjusted"
+            InfoTestTitle = seriesInfoTest.Seriess |> Array.map(fun x -> x.Title) |> Array.head, "Real Gross National Product"
+            InfoTestFrequency = seriesInfoTest.Seriess |> Array.map(fun x -> x.Frequency) |> Array.head, "Annual"
+            InfoTestUnits = seriesInfoTest.Seriess |> Array.map(fun x -> x.Units) |> Array.head, "Billions of Chained 2009 Dollars"
+            InfoTestSeasonalAdjustment =  seriesInfoTest.Seriess |> Array.map(fun x -> x.SeasonalAdjustment) |> Array.head, "Not Seasonally Adjusted"
             ReleaseTestId = seriesReleaseTest.Releases |> Array.map(fun x -> x.Id) |> Array.head, 21
             ReleaseTestName = seriesReleaseTest.Releases |> Array.map(fun x -> x.Name) |> Array.head, "H.6 Money Stock Measures"
-            TagsTestName = seriesTagsTest.Tags |> Array.map(fun x -> x.Name) |> fun elements -> (elements |> Array.contains "nation" && elements |> Array.contains "stlfsi" )
-            TagsTestGroupId = seriesTagsTest.Tags |> Array.map(fun x -> x.GroupId) |> fun elements -> (elements |> Array.contains "geot" && elements |> Array.contains "rls" )
+            TagsTestName = 
+                let elements = seriesTagsTest.Tags |> Array.map(fun x -> x.Name) 
+                (elements |> Array.contains  "nation") && (elements |> Array.contains "stlfsi" )
+            TagsTestGroupId = 
+                let elements = seriesTagsTest.Tags |> Array.map(fun x -> x.GroupId) 
+                (elements |> Array.contains "geot" && elements |> Array.contains "rls" )
         |}
             
     | _ -> 
