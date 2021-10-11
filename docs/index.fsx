@@ -9,7 +9,10 @@
 *)
 
 (*** hide ***)
-#r "../src/FSharp.Data.Fred/bin/Debug/net5.0/FSharp.Data.Fred.dll"
+//#r "FSharp.Data.dll"
+#r "../src/FSharp.Data.Fred/bin/Release/net5.0/FSharp.Data.Fred.dll"
+#r "nuget: FSharp.Data"
+ignore <| FSharp.Data.WorldBankData.GetDataContext() // Force fsi to load F# Data
 
 (**
 F# Data FRED
@@ -35,9 +38,9 @@ by referencing the package as follows:
     // Use one of the following two lines
     #r "nuget: FSharp.Data.Fred" // Use the latest version
     #r "nuget: FSharp.Data.Fred,{{fsdocs-package-version}}" // Use a specific version   
-*)
 
-#r "nuget: FSharp.Data" //Also load FSharp.Data
+    #r "nuget: FSharp.Data" //Also load FSharp.Data
+*)
 
 open FSharp.Data
 open FSharp.Data.Fred
@@ -58,11 +61,10 @@ Example:
 open System.IO
 let envVars = System.Environment.GetEnvironmentVariables()
 [<Literal>]
-let KeyJson = __SOURCE_DIRECTORY__ + "../../fredKey.json" 
+let KeyJson = __SOURCE_DIRECTORY__ + "/../fredKey.json" 
 
-let apiKey = Fred.DevKey(KeyJson)
-(**
-*)
+let apiKey = Fred.loadKey KeyJson
+
 let myFred = Fred apiKey
 
 (**
@@ -146,6 +148,7 @@ Examples:
 (**
 Get the information for series id = `"GS10"`
 *)
+
 myFred.Series.Info "GS10"
 (***include-fsi-output***)
 
