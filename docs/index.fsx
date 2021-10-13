@@ -121,6 +121,7 @@ Examples:
 (**
 Search for `"10-Year"` text without specifying any optional parameters.
 *)
+
 myFred.Series.Search("10-Year").Summary()
 (***include-output***)
 
