@@ -3,15 +3,15 @@ namespace FSharp.Data.Fred
 open System
 open FSharp.Data
 
-module Json =
+module internal Json =
 
     type KeyFile = JsonProvider<EmbeddedResources.KeyFileSample>
-    type SearchResponse = JsonProvider<EmbeddedResources.SearchResponseSample>
-    type SeriesResponse = JsonProvider<EmbeddedResources.SeriesSample>
-    type SeriesObservationsResponse = JsonProvider<EmbeddedResources.SeriesObservationsSample>
-    type SeriesCategoriesResponse = JsonProvider<EmbeddedResources.SeriesCategoriesSample>
-    type SeriesReleaseResponse = JsonProvider<EmbeddedResources.SeriesReleaseSample>
-    type SeriesTagsResponse = JsonProvider<EmbeddedResources.SeriesTagsSample>
+    type SearchResponse = JsonProvider<EmbeddedResources.SearchResponseSample,RootName="SearchResponse">
+    type SeriesResponse = JsonProvider<EmbeddedResources.SeriesSample,RootName="InfoResponse">
+    type SeriesObservationsResponse = JsonProvider<EmbeddedResources.SeriesObservationsSample,RootName="ObservationsResponse">
+    type SeriesCategoriesResponse = JsonProvider<EmbeddedResources.SeriesCategoriesSample,RootName="CategoriesResponse">
+    type SeriesReleaseResponse = JsonProvider<EmbeddedResources.SeriesReleaseSample,RootName="ReleaseResponse">
+    type SeriesTagsResponse = JsonProvider<EmbeddedResources.SeriesTagsSample,RootName="TagsResponse">
 
 type SearchType = 
     | FullText 

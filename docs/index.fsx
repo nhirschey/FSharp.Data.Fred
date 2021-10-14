@@ -128,13 +128,17 @@ myFred.Series.Search("10-Year").Summary()
 (**
 Search for `"10-Year"` text specifying some optional parameters.
 *)
-myFred.Series.Search("10-Year", searchType = SearchType.FullText, limit = 3, orderBy = SearchOrder.GroupPopularity, sortOrder = SortOrder.Descending).Summary()
+myFred.Series.Search("10-Year", 
+                     searchType = SearchType.FullText, 
+                     limit = 3, 
+                     orderBy = SearchOrder.GroupPopularity, 
+                     sortOrder = SortOrder.Descending).Summary()
 (***include-output***)
 
 (**
-Search for `"Hello%World"` text, that should not match any series.
+Search for `"Hello World"` text that should not match any series.
 *)
-myFred.Series.Search("Hello%World").Summary()
+myFred.Series.Search("Hello World").Summary()
 (***include-output***)
 
 (**
@@ -179,8 +183,7 @@ myFred.Series.Categories "GS10"
 (**
 You can also access the category fields with `Array.map`:
 *)
-myFred.Series.Categories "GS10"
-|> fun root -> root.Categories
+myFred.Series.Categories("GS10").Categories
 |> Array.map(fun x -> x.Name)
 (***include-fsi-output***)
 
@@ -229,19 +232,17 @@ Examples:
 *)
 
 (**
-Get the tags information for series id = `"GS10"` without specifying any optional parameters.
+Get the first 3 tags information for series id = `"GS10"` without specifying any optional parameters.
 *)
-myFred.Series.Tags "GS10"
-|> fun root -> root.Tags
-|> Array.truncate 3 //just for formatting purposes.
+myFred.Series.Tags("GS10").Tags
+|> Array.truncate 3 
 (***include-fsi-output***)
 
 (**
-Get the tags information for series id = `"GS10"` specifying some optional parameters.
+Get the first 3 tags information for series id = `"GS10"` specifying some optional parameters.
 *)
-myFred.Series.Tags("GS10", orderBy = OrderByTags.PopularityTags, sortOrder = SortOrder.Descending)
-|> fun root -> root.Tags
-|> Array.truncate 3 //just for formatting purposes.
+myFred.Series.Tags("GS10", orderBy = OrderByTags.PopularityTags, sortOrder = SortOrder.Descending).Tags
+|> Array.truncate 3 
 (***include-fsi-output***)
 
 (**
@@ -303,15 +304,13 @@ Examples:
 (**
 Get the observations for `"GS10"` series without specifying any optional parameters.
 *)
-myFred.Series.Observations "GS10"
-|> fun root -> root.Observations
-|> Seq.truncate 3 //just for formatting purposes.
+myFred.Series.Observations("GS10").Observations
+|> Seq.truncate 3 
 (***include-fsi-output***)
 
 (**
 Get the observations for `"DTP10J25"` with a semi-annual frequency.
 *)
-myFred.Series.Observations("DTP10J25", frequency = Frequency.Semiannual)
-|> fun root -> root.Observations
-|> Seq.truncate 3 //just for formatting purposes.
+myFred.Series.Observations("DTP10J25", frequency = Frequency.Semiannual).Observations
+|> Seq.truncate 3 
 (***include-fsi-output***)
