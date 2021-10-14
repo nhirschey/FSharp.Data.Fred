@@ -67,8 +67,12 @@ Target.create "AssemblyInfo" (fun _ ->
 Target.create "Clean" (fun _ ->
     !! artifactsDir
     ++ "src/*/bin"
-    ++ "temp"
+    ++ "bin"
     ++ ".fsdocs"
+    ++ "src/*/obj"
+    ++ "tests/*/bin"
+    ++ "tests/*/obj"
+    ++ "temp"
     ++ "tmp"
     |> Shell.cleanDirs
     // in case the above pattern is empty as it only matches existing stuff

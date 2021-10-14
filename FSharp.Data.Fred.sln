@@ -10,11 +10,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{5777E6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6D59B3AD-809E-45BB-ABF7-C5F6FE9199DB}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Fred", "src\FSharp.Data.Fred\FSharp.Data.Fred.fsproj", "{4637AC8E-D8E1-44F1-BBAE-7A17826BEE00}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Fred", "src\FSharp.Data.Fred\FSharp.Data.Fred.fsproj", "{4637AC8E-D8E1-44F1-BBAE-7A17826BEE00}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{5C71DB35-238D-4B85-91CB-8E3F7A09A70A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Fred.Tests", "tests\FSharp.Data.Fred.Tests\FSharp.Data.Fred.Tests.fsproj", "{0CEFEE78-B274-4A6F-B5BA-674192DE0EB9}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FSharp.Data.Fred.Tests", "tests\FSharp.Data.Fred.Tests\FSharp.Data.Fred.Tests.fsproj", "{0CEFEE78-B274-4A6F-B5BA-674192DE0EB9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5509679D-715F-4FA9-962F-E3781CE8D1F0}"
+	ProjectSection(SolutionItems) = preProject
+		docs\index.fsx = docs\index.fsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,9 +29,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4637AC8E-D8E1-44F1-BBAE-7A17826BEE00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -54,8 +56,14 @@ Global
 		{0CEFEE78-B274-4A6F-B5BA-674192DE0EB9}.Release|x86.ActiveCfg = Release|Any CPU
 		{0CEFEE78-B274-4A6F-B5BA-674192DE0EB9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4637AC8E-D8E1-44F1-BBAE-7A17826BEE00} = {6D59B3AD-809E-45BB-ABF7-C5F6FE9199DB}
 		{0CEFEE78-B274-4A6F-B5BA-674192DE0EB9} = {5C71DB35-238D-4B85-91CB-8E3F7A09A70A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {823F453E-BD2D-4F83-B1CB-9CA286C58CA3}
 	EndGlobalSection
 EndGlobal

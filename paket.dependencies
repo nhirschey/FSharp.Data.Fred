@@ -1,10 +1,10 @@
 source https://api.nuget.org/v3/index.json
 
 storage: none
-framework: net5.0, netstandard2.1
+framework: net5.0
 nuget coverlet.collector 3.0.2
-nuget FSharp.Core content: none
-nuget FSharp.Data 4.2.2
+nuget FSharp.Core ~> 5.0
+nuget FSharp.Data 
 nuget FsUnit
 nuget Microsoft.NET.Test.Sdk 16.9.4
 nuget NUnit 3.13.1

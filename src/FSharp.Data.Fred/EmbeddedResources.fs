@@ -1,7 +1,9 @@
 module internal EmbeddedResources
 
-[<Literal>]
-let KeyFileSample = """ { "fredKey": "key here in the actual file to be named fredKey.json"} """
+
+let [<Literal>] KeyFileSample = """ 
+{ "fredKey": "key here in the actual file to be named fredKey.json"} 
+"""
 
 let [<Literal>] SearchResponseSample = """
 {
@@ -102,7 +104,8 @@ let [<Literal>] SeriesObservationsSample = """
             "date": "1930-01-01",
             "value": "1e5"
         }
-    ]}"""
+    ]}
+"""
 
 let [<Literal>] SeriesCategoriesSample = """
 {
