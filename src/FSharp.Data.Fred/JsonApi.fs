@@ -13,76 +13,78 @@ module internal Json =
     type SeriesReleaseResponse = JsonProvider<EmbeddedResources.SeriesReleaseSample,RootName="ReleaseResponse">
     type SeriesTagsResponse = JsonProvider<EmbeddedResources.SeriesTagsSample,RootName="TagsResponse">
 
-type SearchType = 
-    | FullText 
-    | SeriesId
+[<AutoOpen>]
+module QueryParameters =
+    type SearchType = 
+        | FullText 
+        | SeriesId
 
-[<RequireQualifiedAccessAttribute>]
-type SearchOrder = 
-    | SearchRank
-    | SeriesIdOrder
-    | Title
-    | Units
-    | Frequency
-    | SeasonalAdjustment 
-    | RealTimeStart 
-    | RealTimeEnd
-    | LastUpdated
-    | ObservationStart
-    | ObservationEnd
-    | Popularity
-    | GroupPopularity
+    [<RequireQualifiedAccessAttribute>]
+    type SearchOrder = 
+        | SearchRank
+        | SeriesIdOrder
+        | Title
+        | Units
+        | Frequency
+        | SeasonalAdjustment 
+        | RealTimeStart 
+        | RealTimeEnd
+        | LastUpdated
+        | ObservationStart
+        | ObservationEnd
+        | Popularity
+        | GroupPopularity
 
-[<RequireQualifiedAccessAttribute>]
-type SortOrder =
-    | Ascending
-    | Descending
+    [<RequireQualifiedAccessAttribute>]
+    type SortOrder =
+        | Ascending
+        | Descending
 
-[<RequireQualifiedAccessAttribute>]
-type Units =
-    | Levels
-    | Change
-    | ChangeFromYearAgo
-    | PercentChange
-    | PercentChangeFromYearAgo
-    | CompoundedAnnualRateofChange
-    | ContinuouslyCompoundedRateofChange
-    | ContinuouslyCompoundedAnnualRateofChange
-    | NaturalLog
+    [<RequireQualifiedAccessAttribute>]
+    type Units =
+        | Levels
+        | Change
+        | ChangeFromYearAgo
+        | PercentChange
+        | PercentChangeFromYearAgo
+        | CompoundedAnnualRateofChange
+        | ContinuouslyCompoundedRateofChange
+        | ContinuouslyCompoundedAnnualRateofChange
+        | NaturalLog
 
-[<RequireQualifiedAccessAttribute>]
-type Frequency =
-        | Daily
-        | Weekly
-        | Biweekly
-        | Monthly
-        | Quarterly
-        | Semiannual
-        | Annual
-        | WeeklyEndingFriday
-        | WeeklyEndingThursday
-        | WeeklyEndingWednesday
-        | WeeklyEndingTuesday
-        | WeeklyEndingMonday
-        | WeeklyEndingSunday
-        | WeeklyEndingSaturday
-        | BiweeklyEndingWednesday
-        | BiweeklyEndingMonday
-        | Default
+    [<RequireQualifiedAccessAttribute>]
+    type Frequency =
+            | Daily
+            | Weekly
+            | Biweekly
+            | Monthly
+            | Quarterly
+            | Semiannual
+            | Annual
+            | WeeklyEndingFriday
+            | WeeklyEndingThursday
+            | WeeklyEndingWednesday
+            | WeeklyEndingTuesday
+            | WeeklyEndingMonday
+            | WeeklyEndingSunday
+            | WeeklyEndingSaturday
+            | BiweeklyEndingWednesday
+            | BiweeklyEndingMonday
+            | Default
 
-[<RequireQualifiedAccessAttribute>]
-type AggMethod =
-        | Average
-        | Sum
-        | EndOfPeriod
+    [<RequireQualifiedAccessAttribute>]
+    type AggMethod =
+            | Average
+            | Sum
+            | EndOfPeriod
 
-[<RequireQualifiedAccessAttribute>]
-type OrderByTags =
-        | SeriesCount
-        | PopularityTags
-        | Created
-        | Name
-        | GroupId
+    [<RequireQualifiedAccessAttribute>]
+    type OrderByTags =
+            | SeriesCount
+            | PopularityTags
+            | Created
+            | Name
+            | GroupId
 
 type internal Endpoint =
     | SeriesSearch
