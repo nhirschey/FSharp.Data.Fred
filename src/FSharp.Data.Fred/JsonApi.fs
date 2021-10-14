@@ -1,18 +1,10 @@
 namespace FSharp.Data.Fred
-/// <namespacedoc>
-///   <summary>
-///   Functionality related to access FRED database.  
-///   Short for Federal Reserve Economic Data, FRED is an online database consisting 
-///   of hundreds of thousands of economic data time series from scores of national, 
-///   international, public, and private sources. FRED Website: https://fred.stlouisfed.org/.
-///   </summary>
-/// </namespacedoc>
-
 
 open System
 open FSharp.Data
 
 module Json =
+
     type KeyFile = JsonProvider<EmbeddedResources.KeyFileSample>
     type SearchResponse = JsonProvider<EmbeddedResources.SearchResponseSample>
     type SeriesResponse = JsonProvider<EmbeddedResources.SeriesSample>
@@ -21,163 +13,76 @@ module Json =
     type SeriesReleaseResponse = JsonProvider<EmbeddedResources.SeriesReleaseSample>
     type SeriesTagsResponse = JsonProvider<EmbeddedResources.SeriesTagsSample>
 
-///   <summary>
-///   Represents the type of search to perform.
-///   </summary>
-///   <category index="1">Unions</category>
 type SearchType = 
-    /// Searches series attributes title, units, frequency, and tags by parsing words into stems. 
-    /// This makes it possible for searches like 'Industry' to match series containing related words such as 'Industries'. 
-    /// Of course, you can search for multiple words like 'money' and 'stock'. Remember to url encode spaces (e.g. 'money%20stock').
     | FullText 
-    /// Performs a substring search on series IDs. Searching for 'ex' will find series containing 'ex' anywhere in a series ID.
-    /// '*' can be used to anchor searches and match 0 or more of any character. Searching for 'ex*' will find series containing 'ex' at the beginning of a series ID.
-    /// Searching for '*ex' will find series containing 'ex' at the end of a series ID. It's also possible to put an '*' in the middle of a string.
-    /// 'm*sl' finds any series starting with 'm' and ending with 'sl'.
     | SeriesId
 
-///   <summary>
-///    Order results by values of the specified attribute. 
-///   </summary>
-///   <category index="2">Unions</category>
 [<RequireQualifiedAccessAttribute>]
 type SearchOrder = 
-    /// Order search by rank
     | SearchRank
-    /// Order search by id numbering order
     | SeriesIdOrder
-    /// Order search by title 
     | Title
-    /// Order search by units
     | Units
-    /// Order search by frequency
     | Frequency
-    /// Order search by seasonal adjustment
     | SeasonalAdjustment 
-    /// Order search by most recent real time start
     | RealTimeStart 
-    /// Order search by most recent real time end
     | RealTimeEnd
-    /// Order search by most recent updated series
     | LastUpdated
-    /// Order search by most recent observation start date
     | ObservationStart
-    /// Order search by most recent observation end date 
     | ObservationEnd
-    /// Order search by most popular
     | Popularity
-    /// Order search by most popular groups
     | GroupPopularity
 
-///   <summary>
-///    Sort results is ascending or descending observation date order.
-///   </summary>
-///   <category index="3">Unions</category>
 [<RequireQualifiedAccessAttribute>]
 type SortOrder =
-    /// Sort by ascending date order
     | Ascending
-    /// Sort by descending date order
     | Descending
 
-///   <summary>
-///   A key that indicates a data value transformation.
-///   </summary>
-///   <category index="4">Unions</category>
 [<RequireQualifiedAccessAttribute>]
 type Units =
-    /// Observation(t), default.
     | Levels
-    /// Observation(t) - Observation(t-1)
     | Change
-    /// Observation(t) - Observation(t-#ObsPerYear)
     | ChangeFromYearAgo
-    /// ((Observation(t)/Observation(t-1)) - 1) * 100
     | PercentChange
-    /// ((Observation(t)/Observation(t-#ObsPerYear)) - 1) * 100
     | PercentChangeFromYearAgo
-    /// (((Observation(t)/Observation(t-1)) ** (#ObsPerYear)) - 1) * 100
     | CompoundedAnnualRateofChange
-    /// (ln(Observation(t)) - ln(Observation(t-1))) * 100
     | ContinuouslyCompoundedRateofChange
-    /// ((ln(Observation(t)) - ln(Observation(t-1))) * 100) * #ObsPerYear
     | ContinuouslyCompoundedAnnualRateofChange
-    /// ln(Observation(t))
     | NaturalLog
 
-///   <summary>
-///   The FRED frequency aggregation feature converts higher frequency data series into lower frequency 
-///   data series (e.g. converts a monthly data series into an annual data series). 
-///   In FRED, the highest frequency data is daily, and the lowest frequency data is annual.  
-/// </summary>
-///   <category index="5">Unions</category>
 [<RequireQualifiedAccessAttribute>]
 type Frequency =
-    /// Daily frequency. 
-    | Daily
-    /// Weekly frequency. 
-    | Weekly
-    /// Biweekly frequency. 
-    | Biweekly
-    /// Monthly frequency. 
-    | Monthly
-    /// Quarterly frequency. 
-    | Quarterly
-    /// Semiannual frequency. 
-    | Semiannual
-    /// Annual frequency. 
-    | Annual
-    /// WeeklyEndingFriday frequency. 
-    | WeeklyEndingFriday
-    /// WeeklyEndingThursday frequency. 
-    | WeeklyEndingThursday
-    /// WeeklyEndingWednesday frequency. 
-    | WeeklyEndingWednesday
-    /// WeeklyEndingTuesday frequency. 
-    | WeeklyEndingTuesday
-    /// WeeklyEndingMonday frequency. 
-    | WeeklyEndingMonday
-    /// WeeklyEndingSunday frequency. 
-    | WeeklyEndingSunday
-    /// WeeklyEndingSaturday frequency. 
-    | WeeklyEndingSaturday
-    /// BiweeklyEndingWednesday frequency. 
-    | BiweeklyEndingWednesday
-    /// BiweeklyEndingMonday frequency. 
-    | BiweeklyEndingMonday
-    /// Default frequency. 
-    | Default
+        | Daily
+        | Weekly
+        | Biweekly
+        | Monthly
+        | Quarterly
+        | Semiannual
+        | Annual
+        | WeeklyEndingFriday
+        | WeeklyEndingThursday
+        | WeeklyEndingWednesday
+        | WeeklyEndingTuesday
+        | WeeklyEndingMonday
+        | WeeklyEndingSunday
+        | WeeklyEndingSaturday
+        | BiweeklyEndingWednesday
+        | BiweeklyEndingMonday
+        | Default
 
-///   <summary>
-///   A key that indicates the aggregation method used for frequency aggregation. 
-///   This parameter has no affect if the frequency parameter is not set.   
-///   </summary>
-///   <category index="6">Unions</category>
 [<RequireQualifiedAccessAttribute>]
 type AggMethod =
-    /// Computes the average to get the observation values for the desired frequency.
-    | Average
-    /// Computes the sum to get the observation values for the desired frequency.
-    | Sum
-    /// Set the end of period value to get the observation values for the desired frequency.
-    | EndOfPeriod
+        | Average
+        | Sum
+        | EndOfPeriod
 
-///   <summary>
-///   Order Tags by values of the specified attribute.
-///   </summary>
-///   <category index="8">Unions</category>
 [<RequireQualifiedAccessAttribute>]
 type OrderByTags =
-    ///Order By SeriesCount
-    | SeriesCount
-    ///Order By PopularityTags
-    | PopularityTags
-    ///Order By Created date
-    | Created
-    ///Order By Name
-    | Name
-    ///Order By GroupId
-    | GroupId
+        | SeriesCount
+        | PopularityTags
+        | Created
+        | Name
+        | GroupId
 
 type internal Endpoint =
     | SeriesSearch
@@ -436,11 +341,6 @@ and Series(key:string) =
         |> Json.SeriesTagsResponse.Parse 
 
 and Fred(key:string) = 
-    /// <summary>
-    /// Loads the API key from a json file.
-    /// </summary>
-    /// <param name="keyFile">The path of the json file containing the key.</param>
-    /// <returns>Returns a value with the API key, "developer" if no api key is found.</returns>
     static member loadKey(keyFile) =
         let envVars = System.Environment.GetEnvironmentVariables()
         let var = "FRED_KEY"
@@ -449,30 +349,8 @@ and Fred(key:string) =
         elif IO.File.Exists(keyFile) then 
             Json.KeyFile.Load(keyFile).FredKey
         else "developer"
-    ///   <summary>
-    ///   Access Type Series constructors, which are the following: 
-    ///   <list>
-    ///   Series.Search - Get economic data series that match search text.  
-    ///   <code lang="fsharp">myFred.Series.Search("Text for Search Here").Summary()</code>
-    ///   </list>
-    ///   <list>Series.Info - Get the information for an economic data series.
-    ///   <code lang="fsharp">myFred.Series.Info "Economic Data Series Here"</code>
-    ///   </list>
-    ///   <list>Series.Categories - Get the categories for an economic data series.
-    ///   <code lang="fsharp">myFred.Series.Categories "Economic Data Series Here"</code>
-    ///   </list>
-    ///   <list>Series.Release - Get the release for an economic data series.
-    ///   <code lang="fsharp">myFred.Series.Release "Economic Data Series Here"</code>
-    ///   </list>
-    ///   <list>Series.Tags - Get the tags for an economic data series.
-    ///   <code lang="fsharp">myFred.Series.Tags "Economic Data Series Here"</code>
-    ///   </list>
-    ///   <list>Series.Observations - Get the observations or data values for an economic data series.
-    ///   <code lang="fsharp">myFred.Series.Observations "Economic Data Series Here"</code>
-    ///   </list>
-    ///   </summary>
+                                                                                            
     member this.Series = Series(key)
-    /// Access API key
     member this.Key = key
 
 
