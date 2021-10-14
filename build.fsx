@@ -67,8 +67,10 @@ Target.create "AssemblyInfo" (fun _ ->
 Target.create "Clean" (fun _ ->
     !! artifactsDir
     ++ "src/*/bin"
+    ++ "src/*/obj"
+    ++ "tests/*/bin"
+    ++ "tests/*/obj"
     ++ "temp"
-    ++ ".fsdocs"
     ++ "tmp"
     |> Shell.cleanDirs
     // in case the above pattern is empty as it only matches existing stuff
@@ -79,8 +81,8 @@ Target.create "Clean" (fun _ ->
 // Build library
 // --------------------------------------------------------------------------------------
 Target.create "Build" (fun _ ->
-    solutionFile
-    |> DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Debug })
+    //solutionFile
+    //|> DotNet.build (fun opts -> { opts with Configuration = DotNet.BuildConfiguration.Debug })
     solutionFile
     |> DotNet.build (fun opts -> { opts with Configuration = configuration } )
 )
