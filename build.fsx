@@ -120,7 +120,7 @@ Target.create "NuGet" (fun _ ->
 
 Target.create "GenerateDocs" (fun _ ->
     Shell.cleanDir ".fsdocs"
-    DotNet.exec id "fsdocs" "build --eval --strict --clean --properties Configuration=Release" |> ignore
+    DotNet.exec id "fsdocs" "build --eval --clean --properties Configuration=Release" |> ignore
 )
 
 Target.create "DocsWatch" (fun _ ->

@@ -54,6 +54,7 @@ Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
 Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
 #endif // IPYNB
 
+(** Open namespaces *)
 open FSharp.Data
 open FSharp.Data.Fred
 open System // Usefull to access DateTime
@@ -65,6 +66,10 @@ First in order to use the methods you'll need to create a value with type `Fred`
 Fred receives an API key as a parameter (`string`). [Get your FRED API key.](https://fred.stlouisfed.org/docs/api/api_key.html)
 
 Example:
+
+    let apiKey = "insert API key here"
+    let myFred = Fred apiKey
+    
 *)
 
 (***do-not-eval,condition:ipynb,fsx***)
