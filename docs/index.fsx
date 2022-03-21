@@ -1,9 +1,6 @@
-(*** hide ***)
-/// example fast binder url: https://mybinder.org/v2/gh/fsprojects/fsharp.formatting/master?urlpath=git-pull?repo=https:/nhirschey.github.com/teaching/gh-pages/fundamentals.ipynb
-
 (**
 
-[![Binder](img/badge-binder.svg)](https://mybinder.org/v2/gh/fsprojects/FSharp.Data.Fred/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
+[![Binder](img/badge-binder.svg)](https://mybinder.org/v2/gh/nhirschey/FSharp.Data.Fred/gh-pages?filepath={{fsdocs-source-basename}}.ipynb)&emsp;
 [![Script](img/badge-script.svg)]({{root}}/{{fsdocs-source-basename}}.fsx)&emsp;
 [![Notebook](img/badge-notebook.svg)]({{root}}/{{fsdocs-source-basename}}.ipynb)
 *)
@@ -42,9 +39,24 @@ by referencing the package as follows:
     #r "nuget: FSharp.Data" //Also load FSharp.Data
 *)
 
+(*** condition: fsx ***)
+#if FSX
+#r "nuget: FSharp.Data"
+#r "nuget: FSharp.Data.Fred,{{fsdocs-package-version}}"
+#endif // FSX
+(*** condition: ipynb ***)
+#if IPYNB
+#r "nuget: FSharp.Data"
+#r "nuget: FSharp.Data.Fred,{{fsdocs-package-version}}"
+
+// Set dotnet interactive formatter to plaintext
+Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
+Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
+#endif // IPYNB
+
 open FSharp.Data
 open FSharp.Data.Fred
-open System //Usefull to access DateTime
+open System // Usefull to access DateTime
 
 (**
 ## F# Data FRED
@@ -52,9 +64,22 @@ First in order to use the methods you'll need to create a value with type `Fred`
 
 Fred receives an API key as a parameter (`string`). [Get your FRED API key.](https://fred.stlouisfed.org/docs/api/api_key.html)
 
-Example: 
+Example:
+*)
 
-    let apiKey = "insert API key here"
+(***do-not-eval,condition:ipynb,fsx***)
+#if IPYNB 
+let apiKey = "insert API key here"
+let myFred = Fred apiKey
+#endif // IPYNB
+
+(***do-not-eval,condition:fsx***)
+#if FSX 
+let apiKey = "insert API key here"
+let myFred = Fred apiKey
+#endif // FSX
+
+(**
 *)
 
 (***hide***)
@@ -63,9 +88,9 @@ let envVars = System.Environment.GetEnvironmentVariables()
 [<Literal>]
 let KeyJson = __SOURCE_DIRECTORY__ + "/../fredKey.json" 
 
-let apiKey = Fred.loadKey KeyJson
+let hiddenApiKey = Fred.loadKey KeyJson
 
-let myFred = Fred apiKey
+let myFred = Fred hiddenApiKey
 
 (**
 Now you can use the created value `myFred` to access all the methods in the FRED library.

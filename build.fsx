@@ -65,6 +65,8 @@ Target.create "AssemblyInfo" (fun _ ->
 // --------------------------------------------------------------------------------------
 
 Target.create "Clean" (fun _ ->
+    DotNet.exec id "clean" ""
+
     !! artifactsDir
     ++ "src/*/bin"
     ++ "bin"
@@ -121,6 +123,11 @@ Target.create "GenerateDocs" (fun _ ->
     DotNet.exec id "fsdocs" "build --eval --strict --clean --properties Configuration=Release" |> ignore
 )
 
+Target.create "DocsWatch" (fun _ ->
+    Shell.cleanDir ".fsdocs"
+    DotNet.exec id "fsdocs" "watch --eval --clean " |> ignore
+)
+
 Target.create "All" ignore
 
 // clean and recreate assembly information on release
@@ -131,6 +138,9 @@ Target.create "All" ignore
   ==> "Tests"
   ==> "GenerateDocs"
   ==> "All"
+
+"Build"
+  ==> "DocsWatch"
 
 Target.runOrDefault "All"
 
