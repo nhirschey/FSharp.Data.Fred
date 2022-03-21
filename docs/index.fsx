@@ -8,21 +8,18 @@
 (*** hide ***)
 //#r "FSharp.Data.dll"
 #r "../src/FSharp.Data.Fred/bin/Release/net5.0/FSharp.Data.Fred.dll"
-#r "nuget: FSharp.Data"
+#r "nuget: FSharp.Data, 4.2.4" // this must be the same as in paket.lock
 ignore <| FSharp.Data.WorldBankData.GetDataContext() // Force fsi to load F# Data
 
 (**
 F# Data FRED
 ===================
-
 F# Data FRED is a library for
 [FRED database](https://fred.stlouisfed.org/) data access
 based on FSharp.Data. 
-
 Short for Federal Reserve Economic Data, FRED is an online database consisting 
 of hundreds of thousands of economic data time series from scores of national, 
 international, public, and private sources.
-
 This library uses the [FRED API](https://fred.stlouisfed.org/docs/api/fred/) to access the data.
 *)
 
@@ -31,60 +28,22 @@ You can use `FSharp.Data.Fred` in [dotnet interactive](https://github.com/dotnet
 notebooks in [Visual Studio Code](https://code.visualstudio.com/) 
 or [Jupyter](https://jupyter.org/), or in F# scripts (`.fsx` files), 
 by referencing the package as follows:
-
     // Use one of the following two lines
     #r "nuget: FSharp.Data.Fred" // Use the latest version
     #r "nuget: FSharp.Data.Fred,{{fsdocs-package-version}}" // Use a specific version   
-
     #r "nuget: FSharp.Data" //Also load FSharp.Data
 *)
 
-(*** condition: fsx ***)
-#if FSX
-#r "nuget: FSharp.Data"
-#r "nuget: FSharp.Data.Fred,{{fsdocs-package-version}}"
-#endif // FSX
-(*** condition: ipynb ***)
-#if IPYNB
-#r "nuget: FSharp.Data"
-#r "nuget: FSharp.Data.Fred,{{fsdocs-package-version}}"
-
-// Set dotnet interactive formatter to plaintext
-Formatter.SetPreferredMimeTypesFor(typeof<obj>, "text/plain")
-Formatter.Register(fun (x:obj) (writer: TextWriter) -> fprintfn writer "%120A" x )
-#endif // IPYNB
-
-(** Open namespaces *)
 open FSharp.Data
 open FSharp.Data.Fred
-open System // Usefull to access DateTime
+open System //Usefull to access DateTime
 
 (**
 ## F# Data FRED
 First in order to use the methods you'll need to create a value with type `Fred`. 
-
 Fred receives an API key as a parameter (`string`). [Get your FRED API key.](https://fred.stlouisfed.org/docs/api/api_key.html)
-
-Example:
-
+Example: 
     let apiKey = "insert API key here"
-    let myFred = Fred apiKey
-    
-*)
-
-(***do-not-eval,condition:ipynb,fsx***)
-#if IPYNB 
-let apiKey = "insert API key here"
-let myFred = Fred apiKey
-#endif // IPYNB
-
-(***do-not-eval,condition:fsx***)
-#if FSX 
-let apiKey = "insert API key here"
-let myFred = Fred apiKey
-#endif // FSX
-
-(**
 *)
 
 (***hide***)
@@ -93,9 +52,9 @@ let envVars = System.Environment.GetEnvironmentVariables()
 [<Literal>]
 let KeyJson = __SOURCE_DIRECTORY__ + "/../fredKey.json" 
 
-let hiddenApiKey = Fred.loadKey KeyJson
+let apiKey = Fred.loadKey KeyJson
 
-let myFred = Fred hiddenApiKey
+let myFred = Fred apiKey
 
 (**
 Now you can use the created value `myFred` to access all the methods in the FRED library.
@@ -271,7 +230,7 @@ myFred.Series.Tags("GS10").Tags
 (**
 Get the first 3 tags information for series id = `"GS10"` specifying some optional parameters.
 *)
-myFred.Series.Tags("GS10", orderBy = OrderByTags.PopularityTags, sortOrder = SortOrder.Descending).Tags
+myFred.Series.Tags("GS10", orderBy = OrderByTags.Popularity, sortOrder = SortOrder.Descending).Tags
 |> Array.truncate 3 
 (***include-fsi-output***)
 

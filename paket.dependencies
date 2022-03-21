@@ -4,7 +4,7 @@ storage: none
 framework: net5.0
 nuget coverlet.collector 3.0.2
 nuget FSharp.Core ~> 5.0
-nuget FSharp.Data 
+nuget FSharp.Data 4.2.4 // If you update this update the reference in the docs too. Docs generation fails if the packet version and #r nuget versions are different
 nuget FsUnit
 nuget Microsoft.NET.Test.Sdk 16.9.4
 nuget NUnit 3.13.1
