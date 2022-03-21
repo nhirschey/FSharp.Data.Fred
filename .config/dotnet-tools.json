@@ -8,8 +8,8 @@
         "fake"
       ]
     },
-    "fsharp.formatting.commandtool": {
-      "version": "11.4.4",
+    "fsdocs-tool": {
+      "version": "15.0.0",
       "commands": [
         "fsdocs"
       ]
