@@ -290,26 +290,20 @@ type Search(key:string,searchText:string,?searchType:SearchType,?realtimeStart:D
             printfn $"         Id: %-10s{series.Id} Period: {sd} to {ed}  Freq: {freq} \n" 
 
 
-    /// <summary>
-    /// A data series.
-    /// </summary>
+    /// <summary> A data series.</summary>
 and Series(key:string) =
-    /// <summary>
-    /// Get the information for an economic data series.
-    /// </summary>
+    /// <summary> Get the information for an economic data series.</summary>
     /// <param name="id">The id for a series. String, required.</param>
     /// <returns>The information for an economic data series.</returns>
     member this.Info(id:string) = 
         Helpers.request key Endpoint.SeriesInfo [ "series_id", id.ToUpper() ]
         |> Json.SeriesResponse.Parse
 
-    /// <summary>
-    /// Get the observations or data values for an economic data series.
-    /// </summary>
+    /// <summary> Get the observations or data values for an economic data series.</summary>
     /// <param name="id">The id for a series. String, required.</param>
     /// <param name="realtimeStart">
     /// The start of the real-time period. For more information, see <a href="https://research.stlouisfed.org/docs/api/fred/realtime_period.html">Real-time periods</a>.
-    /// `DateTime(yyyy,MM,dd)` formatted `DateTime`, optional, default: today's date.
+    /// <c>DateTime(yyyy,MM,dd)</c> formatted <c>DateTime</c>, optional, default: today's date.
     /// </param>
     /// <param name="realtimeEnd">
     /// The start of the real-time period. For more information, see <a href="https://research.stlouisfed.org/docs/api/fred/realtime_period.html">Real-time periods</a>.
@@ -417,9 +411,7 @@ and Series(key:string) =
         Helpers.request key Endpoint.SeriesObservations queryParameters
         |> Json.SeriesObservationsResponse.Parse
 
-    /// <summary>
-    /// Get economic data series that match search text.
-    /// </summary>
+    /// <summary> Get economic data series that match search text.</summary>
     /// <param name="searchText">The words to match against economic data series.</param>
     /// <param name="searchType">
     /// Determines the type of search to perform. Default is <see cref="T:FSharp.Data.Fred.QueryParameters.SearchType.FullText"/>
@@ -453,12 +445,10 @@ and Series(key:string) =
     member this.Search(searchText:string,?searchType:SearchType,?realtimeStart:DateTime,?realtimeEnd:DateTime,?limit:int,?orderBy:SearchOrder,?sortOrder:SortOrder) = 
         Search(key, searchText=searchText, ?searchType=searchType, ?realtimeStart=realtimeStart, ?realtimeEnd=realtimeEnd, ?limit=limit, ?orderBy=orderBy, ?sortOrder=sortOrder)
 
-    /// <summary>
-    /// Get the categories for an economic data series.
-    /// </summary>
+    /// <summary> Get the categories for an economic data series.</summary>
     /// <param name="id">The id for a series. String, required.</param>
     /// <param name="realtimeStart">
-    /// The start of the real-time period. For more information, see <a href="https://fred.stlouisfed.org/docs/api/fred/realtime_period.html">Real-Time Periods]</a>.
+    /// The start of the real-time period. For more information, see <a href="https://fred.stlouisfed.org/docs/api/fred/realtime_period.html">Real-Time Periods</a>.
     /// `DateTime(yyyy,MM,dd)` formatted `DateTime`, optional, default: today's date.
     /// </param>
     /// <param name="realtimeEnd">
@@ -483,9 +473,7 @@ and Series(key:string) =
         Helpers.request key Endpoint.SeriesCategories queryParameters
         |> Json.SeriesCategoriesResponse.Parse
 
-    /// <summary>
-    /// Get the release for an economic data series.
-    /// </summary>
+    /// <summary> Get the release for an economic data series.</summary>
     /// <param name="id">The id for a series. String, required.</param>
     /// <param name="realtimeStart">
     /// The start of the real-time period. For more information, see 
@@ -514,9 +502,7 @@ and Series(key:string) =
         Helpers.request key Endpoint.SeriesRelease queryParameters
         |> Json.SeriesReleaseResponse.Parse 
 
-    /// <summary>
-    /// Get the FRED tags for a series.
-    /// </summary>
+    /// <summary> Get the FRED tags for a series.</summary>
     /// <param name="id">The id for a series. String, required.</param>
     /// <param name="realtimeStart">
     /// The start of the real-time period. For more information, see
@@ -580,9 +566,7 @@ and Series(key:string) =
 ///  </code>
 ///  </example>
 and Fred(key:string) = 
-    /// <summary>
-    /// Loads a Fred api key from a json file.
-    /// </summary>
+    /// <summary> Loads a Fred api key from a json file.</summary>
     /// The key file should have the format
     /// <code>
     /// { "fredKey": "key here in the actual file that you should name fredKey.json and NOT commit to git"}
@@ -600,9 +584,7 @@ and Fred(key:string) =
         elif IO.File.Exists(keyFile) then 
             Json.KeyFile.Load(keyFile).FredKey
         else "developer"
-    /// <summary>
-    /// Represents a Fred data series. 
-    /// </summary>                                                                      
+    /// <summary> Represents a Fred data series. </summary>                                                                      
     member this.Series = Series(key)
     /// Fred API key
     member this.Key = key
