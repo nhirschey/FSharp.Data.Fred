@@ -29,8 +29,7 @@ notebooks in [Visual Studio Code](https://code.visualstudio.com/)
 or [Jupyter](https://jupyter.org/), or in F# scripts (`.fsx` files), 
 by referencing the package as follows:
 
-    (***do-not-eval***)
-    #r "nuget: FSharp.Data.Fred"   
+    #r "nuget: FSharp.Data.Fred, {{fsdocs-package-version}}"   
     #r "nuget: FSharp.Data" //Also load FSharp.Data
 *)
 
