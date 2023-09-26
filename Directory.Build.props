@@ -21,6 +21,7 @@
     <RepositoryUrl>https://github.com/nhirschey/FSharp.Data.Fred</RepositoryUrl>
     <PackageProjectUrl>https://nhirschey.github.io/FSharp.Data.Fred</PackageProjectUrl>
     <PackageIconUrl>https://github.com/nhirschey/FSharp.Data.Fred/tree/main/docs/img/logo.png</PackageIconUrl>
+    <FsDocsReleaseNotesLink>https://github.com/nhirschey/FSharp.Data.Fred/blob/main/src/FSharp.Data.Fred/CHANGELOG.md</FsDocsReleaseNotesLink>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
