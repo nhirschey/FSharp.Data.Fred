@@ -2,7 +2,7 @@ version 7.2.1
 source https://api.nuget.org/v3/index.json
 
 storage: none
-framework: net6.0
+
 nuget coverlet.collector 3.0.2
 nuget FSharp.Core 6.0
 nuget FSharp.Data 4.2.4 // If you update this update the reference in the docs too. Docs generation fails if the packet version and #r nuget versions are different
