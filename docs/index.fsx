@@ -7,7 +7,7 @@
 
 (*** hide ***)
 //#r "FSharp.Data.dll"
-#r "../src/FSharp.Data.Fred/bin/Release/net6.0/FSharp.Data.Fred.dll"
+#r "../src/FSharp.Data.Fred/bin/Release/netstandard2.0/FSharp.Data.Fred.dll"
 #r "nuget: FSharp.Data, 4.2.4" // this must be the same as in paket.lock
 ignore <| FSharp.Data.WorldBankData.GetDataContext() // Force fsi to load F# Data
 
