@@ -10,17 +10,3 @@ nuget FsUnit
 nuget Microsoft.NET.Test.Sdk 16.9.4
 nuget NUnit 3.13.1
 nuget NUnit3TestAdapter 3.17.0
-
-group Fake
-    source https://api.nuget.org/v3/index.json
-    storage: none
-
-    nuget Fake.Core.Target             ~> 6.0.0
-    nuget Fake.Core.ReleaseNotes       ~> 6.0.0
-    nuget Fake.DotNet.AssemblyInfoFile ~> 6.0.0
-    nuget Fake.DotNet.Cli              ~> 6.0.0
-    nuget Fake.DotNet.Testing.NUnit    ~> 6.0.0
-    nuget Fake.DotNet.NuGet            ~> 6.0.0
-    nuget Fake.DotNet.MsBuild          ~> 6.0.0
-    nuget Fake.Tools.Git               ~> 6.0.0
-	nuget Fake.DotNet.Paket            ~> 6.0.0
