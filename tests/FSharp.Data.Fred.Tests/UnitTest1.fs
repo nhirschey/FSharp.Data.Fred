@@ -2,25 +2,23 @@
 #r "nuget: FSharp.Data,4.2.3"
 #r "nuget: NUnit"
 #r "nuget: FsUnit"
-#r "../../src/FSharp.Data.Fred/bin/Debug/net5.0/FSharp.Data.Fred.dll"
+#r "../../src/FSharp.Data.Fred/bin/Debug/netstandard2.0/FSharp.Data.Fred.dll"
 ignore <| FSharp.Data.WorldBankData.GetDataContext() // Force fsi to load F# Data
 #else
 module FSharp.Data.Fred.Tests
 #endif
 
 open NUnit.Framework
-open FSharp.Data
 open FSharp.Data.Fred
 open FsUnit
 open System
-open System.IO
-//type x = JsonProvider<"""{"key":"hi"}""">
-//x.GetSample()
 
 [<Literal>]
 let KeyJson = __SOURCE_DIRECTORY__ + "/../../fredKey.json" 
 
-let apiKey = "developer"
+let apiKey = 
+    //Fred.loadKey KeyJson
+    "developer"
 
 let tolerance = 1e-7
 
@@ -77,7 +75,7 @@ let Tests =
             CategoriesTestId = seriesCategoriesTest.Categories |> Array.map(fun x -> x.Id) |> Array.head, 115
             CategoriesTestName = seriesCategoriesTest.Categories |> Array.map(fun x -> x.Name) |> Array.head, "Treasury Constant Maturity"
             CategoriesTestParentId = seriesCategoriesTest.Categories |> Array.map(fun x -> x.ParentId) |> Array.head, 22
-            InfoTestTitle = seriesInfoTest.Seriess |> Array.map(fun x -> x.Title) |> Array.head, "10-Year Treasury Constant Maturity Rate"
+            InfoTestTitle = seriesInfoTest.Seriess |> Array.map(fun x -> x.Title) |> Array.head, "Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis"
             InfoTestFrequency = seriesInfoTest.Seriess |> Array.map(fun x -> x.Frequency) |> Array.head, "Monthly"
             InfoTestUnits = seriesInfoTest.Seriess |> Array.map(fun x -> x.Units) |> Array.head, "Percent"
             InfoTestSeasonalAdjustment =  seriesInfoTest.Seriess |> Array.map(fun x -> x.SeasonalAdjustment) |> Array.head, "Not Seasonally Adjusted"
@@ -105,7 +103,9 @@ let ``Test Categories ParentId`` () =
 
 [<Test>] 
 let ``Test Info Title`` () =  
-    Tests.InfoTestTitle |> fun (realResult, expectedResult) -> realResult |> should (equalWithin tolerance) expectedResult
+    let actual, expected = Tests.InfoTestTitle
+    if actual <> expected then
+        Assert.Fail($"expected:\n{expected}\nactual:\n{actual}")
 
 [<Test>] 
 let ``Test Info Frequency`` () =  
