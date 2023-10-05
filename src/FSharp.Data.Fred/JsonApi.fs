@@ -205,7 +205,11 @@ module internal Helpers =
                        query = query @ [ "api_key", key; "file_type", "json"], 
                        headers = [ HttpRequestHeaders.UserAgent "FSharp.Data.Fred" 
                                    HttpRequestHeaders.Accept HttpContentTypes.Json ])
-
+    
+    let cstNow =
+        let utcNow = DateTime.UtcNow
+        let cstZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")
+        TimeZoneInfo.ConvertTimeFromUtc(utcNow, cstZone)
 
 type Search(key:string,searchText:string,?searchType:SearchType,?realtimeStart:DateTime,?realtimeEnd:DateTime,?limit:int,?orderBy:SearchOrder,?sortOrder:SortOrder)=
     let searchType = 
@@ -215,10 +219,10 @@ type Search(key:string,searchText:string,?searchType:SearchType,?realtimeStart:D
     let limit = defaultArg limit 20
     let searchText = System.Uri.EscapeUriString(searchText)
     let realtimeStart = 
-        let dt = defaultArg realtimeStart DateTime.Now
+        let dt = defaultArg realtimeStart Helpers.cstNow
         dt.ToString("yyyy-MM-dd")
     let realtimeEnd =
-        let dt = defaultArg realtimeEnd DateTime.Now
+        let dt = defaultArg realtimeEnd Helpers.cstNow
         dt.ToString("yyyy-MM-dd")
     let orderBy = 
         if searchType = "series_id" then 
@@ -346,10 +350,10 @@ and Series(key:string) =
     /// <returns>Observations or data values for an economic data series.</returns>    
     member this.Observations(id:string,?realtimeStart:DateTime,?realtimeEnd:DateTime,?limit:int,?sortOrder:SortOrder,?observationStart:DateTime,?observationEnd:DateTime,?units:Units,?frequency:Frequency,?aggMethod:AggMethod) =
         let realtimeStart = 
-            let dt = defaultArg realtimeStart DateTime.Now
+            let dt = defaultArg realtimeStart Helpers.cstNow
             dt.ToString("yyyy-MM-dd")
         let realtimeEnd =
-            let dt = defaultArg realtimeEnd DateTime.Now
+            let dt = defaultArg realtimeEnd Helpers.cstNow
             dt.ToString("yyyy-MM-dd")
         let sortOrder = 
             match defaultArg sortOrder SortOrder.Ascending with
@@ -459,10 +463,10 @@ and Series(key:string) =
     /// <returns>A collection of the series categories.</returns>
     member this.Categories(id:string,?realtimeStart:DateTime,?realtimeEnd:DateTime) =
         let realtimeStart = 
-            let dt = defaultArg realtimeStart DateTime.Now
+            let dt = defaultArg realtimeStart Helpers.cstNow
             dt.ToString("yyyy-MM-dd")
         let realtimeEnd =
-            let dt = defaultArg realtimeEnd DateTime.Now
+            let dt = defaultArg realtimeEnd Helpers.cstNow
             dt.ToString("yyyy-MM-dd")
         let queryParameters = [
             "series_id", id.ToUpper()
@@ -488,10 +492,10 @@ and Series(key:string) =
     /// <returns>A collection of fields describing the series release.</returns>
     member this.Release(id:string,?realtimeStart:DateTime,?realtimeEnd:DateTime) =
         let realtimeStart =
-            let dt = defaultArg realtimeStart DateTime.Now
+            let dt = defaultArg realtimeStart Helpers.cstNow
             dt.ToString("yyyy-MM-dd")
         let realtimeEnd = 
-            let dt = defaultArg realtimeEnd DateTime.Now
+            let dt = defaultArg realtimeEnd Helpers.cstNow
             dt.ToString("yyyy-MM-dd")
         let queryParameters = [
             "series_id", id.ToUpper()
@@ -525,10 +529,10 @@ and Series(key:string) =
     /// <returns></returns>
     member this.Tags(id:string,?realtimeStart:DateTime,?realtimeEnd:DateTime,?orderBy:OrderByTags,?sortOrder:SortOrder) =
         let realtimeStart =
-            let dt = defaultArg realtimeStart DateTime.Now
+            let dt = defaultArg realtimeStart Helpers.cstNow
             dt.ToString("yyyy-MM-dd")
         let realtimeEnd = 
-            let dt = defaultArg realtimeEnd DateTime.Now
+            let dt = defaultArg realtimeEnd Helpers.cstNow
             dt.ToString("yyyy-MM-dd")
         let orderBy = 
             match defaultArg orderBy OrderByTags.SeriesCount with
