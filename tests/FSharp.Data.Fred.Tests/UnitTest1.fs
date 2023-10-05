@@ -16,7 +16,9 @@ open System
 [<Literal>]
 let KeyJson = __SOURCE_DIRECTORY__ + "/../../fredKey.json" 
 
-let apiKey = "developer"
+let apiKey = 
+    //Fred.loadKey KeyJson
+    "developer"
 
 let tolerance = 1e-7
 
