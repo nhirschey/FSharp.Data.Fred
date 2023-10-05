@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.0] - 2023-10-05
+
+### Changed
+- [Target netstandard2.0 so that it works with .NET framework.](https://github.com/nhirschey/FSharp.Data.Fred/pull/17)
+
 ## [0.1.0] - 2023-09-27
 
 ### Added
