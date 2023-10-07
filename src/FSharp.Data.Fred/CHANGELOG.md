@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1] - 2023-10-07
+
+### Fixed
+
+- [Fix timezone for realtime start.](https://github.com/nhirschey/FSharp.Data.Fred/pull/18)
+
 ## [0.2.0] - 2023-10-05
 
 ### Changed
