@@ -44,11 +44,11 @@ module QueryParameters =
         /// </summary>
         | SeriesId
 
-    [<RequireQualifiedAccessAttribute>]
     ///   <summary>
     ///    Order results by values of the specified attribute. 
     ///   </summary>
     ///   <category index="2">Unions</category>
+    [<RequireQualifiedAccess>]
     type SearchOrder =
         /// Order search by rank. 
         | SearchRank
@@ -305,13 +305,13 @@ and Series(key:string) =
 
     /// <summary> Get the observations or data values for an economic data series.</summary>
     /// <param name="id">The id for a series. String, required.</param>
-    /// <param name="realtimeStart">
-    /// The start of the real-time period. For more information, see <a href="https://research.stlouisfed.org/docs/api/fred/realtime_period.html">Real-time periods</a>.
-    /// <c>DateTime(yyyy,MM,dd)</c> formatted <c>DateTime</c>, optional, default: today's date.
+    /// <param name="observationStart">
+    /// The start of the observation period.
+    /// Optional, default: <c>DateTime(1776,07,04)</c> (earliest available).
     /// </param>
-    /// <param name="realtimeEnd">
-    /// The start of the real-time period. For more information, see <a href="https://research.stlouisfed.org/docs/api/fred/realtime_period.html">Real-time periods</a>.
-    /// Optional, default: today's date.
+    /// <param name="observationEnd">
+    /// The end of the observation period.
+    /// Optional, default: <c>DateTime(9999,12,31)</c> (latest available).
     /// </param>
     /// <param name="limit">
     /// The maximum number of results to return.
@@ -320,14 +320,6 @@ and Series(key:string) =
     /// <param name="sortOrder">
     /// Sort results is ascending or descending observation date order.  
     /// optional, default: asc.
-    /// </param>
-    /// <param name="observationStart">
-    /// The start of the observation period.
-    /// Optional, default: <c>DateTime(1776,07,04)</c> (earliest available).
-    /// </param>
-    /// <param name="observationEnd">
-    /// The end of the observation period.
-    /// Optional, default: <c>DateTime(9999,12,31)</c> (latest available).
     /// </param>
     /// <param name="units">
     /// A key that indicates a data value transformation. 
@@ -342,13 +334,21 @@ and Series(key:string) =
     /// There are 3 aggregation methods available- average, sum, and end of period. 
     /// See the aggregation_method parameter <a href="https://research.stlouisfed.org/docs/api/fred/series_observations.html#aggregation_method">here</a>.
     /// </param>
+    /// <param name="realtimeStart">
+    /// The start of the real-time period, "when facts were true or when information was known until it changed." For more information, see <a href="https://research.stlouisfed.org/docs/api/fred/realtime_period.html">Real-time periods</a>.
+    /// <c>DateTime(yyyy,MM,dd)</c> formatted <c>DateTime</c>, optional, default: today's date.
+    /// </param>
+    /// <param name="realtimeEnd">
+    /// The start of the real-time period, "when facts were true or when information was known until it changed." For more information, see <a href="https://research.stlouisfed.org/docs/api/fred/realtime_period.html">Real-time periods</a>.
+    /// Optional, default: today's date.
+    /// </param>
     /// <param name="aggMethod">
     /// A key that indicates the aggregation method used for frequency aggregation. 
     /// This parameter has no affect if the <a href="https://fred.stlouisfed.org/docs/api/fred/series_observations.html#frequency">frequency parameter</a> is not set.
     /// Optional, default: AggMethod.Average.
     /// </param>
     /// <returns>Observations or data values for an economic data series.</returns>    
-    member this.Observations(id:string,?realtimeStart:DateTime,?realtimeEnd:DateTime,?limit:int,?sortOrder:SortOrder,?observationStart:DateTime,?observationEnd:DateTime,?units:Units,?frequency:Frequency,?aggMethod:AggMethod) =
+    member this.Observations(id:string,?observationStart:DateTime,?observationEnd:DateTime,?limit:int,?sortOrder:SortOrder,?units:Units,?frequency:Frequency,?aggMethod:AggMethod,?realtimeStart:DateTime,?realtimeEnd:DateTime) =
         let realtimeStart = 
             let dt = defaultArg realtimeStart Helpers.cstNow
             dt.ToString("yyyy-MM-dd")
