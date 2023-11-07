@@ -3,13 +3,13 @@
   "isRoot": true,
   "tools": {
     "fsdocs-tool": {
-      "version": "19.1.0",
+      "version": "20.0.0-alpha-001",
       "commands": [
         "fsdocs"
       ]
     },
     "paket": {
-      "version": "20.0.0-alpha-003",
+      "version": "7.2.1",
       "commands": [
         "paket"
       ]
