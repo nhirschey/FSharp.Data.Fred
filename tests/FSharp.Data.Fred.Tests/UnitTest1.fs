@@ -95,7 +95,7 @@ let ``Test Categories Id`` () =
 
 [<Test>] 
 let ``Test Categories Name`` () =  
-    Tests.CategoriesTestName |> fun (realResult, expectedResult) -> realResult |> should (equalWithin tolerance) expectedResult
+    Tests.CategoriesTestName |> fun (realResult, expectedResult) -> realResult |> should equal expectedResult
 
 [<Test>] 
 let ``Test Categories ParentId`` () =  
@@ -109,15 +109,15 @@ let ``Test Info Title`` () =
 
 [<Test>] 
 let ``Test Info Frequency`` () =  
-    Tests.InfoTestFrequency |> fun (realResult, expectedResult) -> realResult |> should (equalWithin tolerance) expectedResult
+    Tests.InfoTestFrequency |> fun (realResult, expectedResult) -> realResult |> should equal expectedResult
 
 [<Test>] 
 let ``Test Info Units`` () =  
-    Tests.InfoTestUnits |> fun (realResult, expectedResult) -> realResult |> should (equalWithin tolerance) expectedResult
+    Tests.InfoTestUnits |> fun (realResult, expectedResult) -> realResult |> should equal expectedResult
 
 [<Test>] 
 let ``Test Info SeasonalAdjustment`` () =  
-    Tests.InfoTestSeasonalAdjustment |> fun (realResult, expectedResult) -> realResult |> should (equalWithin tolerance) expectedResult
+    Tests.InfoTestSeasonalAdjustment |> fun (realResult, expectedResult) -> realResult |> should equal expectedResult
 
 [<Test>] 
 let ``Test Releases Id`` () =  
@@ -125,12 +125,12 @@ let ``Test Releases Id`` () =
 
 [<Test>] 
 let ``Test Releases Name`` () =  
-    Tests.ReleaseTestName |> fun (realResult, expectedResult) -> realResult |> should (equalWithin tolerance) expectedResult
+    Tests.ReleaseTestName |> fun (realResult, expectedResult) -> realResult |> should equal expectedResult
 
 [<Test>] 
 let ``Test Tags Name`` () =  
-    Assert.True(Tests.TagsTestName)
+    Assert.That(Tests.TagsTestName)
 
 [<Test>] 
 let ``Test Tags GroupId`` () =  
-    Assert.True(Tests.TagsTestGroupId)
+    Assert.That(Tests.TagsTestGroupId)
