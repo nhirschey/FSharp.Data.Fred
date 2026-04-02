@@ -3,42 +3,45 @@ name: Publish Docs
 on:
   push:
     branches: [ main ]
-    
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
-    
-    env: 
-      FRED_KEY: ${{ secrets.FRED_KEY }} 
+
+    env:
+      FRED_KEY: ${{ secrets.FRED_KEY }}
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('paket.dependencies', 'global.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: |
-          10.0.x
-    - name: Restore .NET local tools
-      run: dotnet tool restore
-    - name: Restore packages
-      run: dotnet paket restore
-    - name: Build
-      run: dotnet build --configuration Release
-    - name: Run tests
-      run: dotnet test
-    - name: build docs
-      run: dotnet fsdocs build --eval --clean --properties Configuration=Release
+        dotnet-version: 10.0.x
+
+    - name: Run CI
+      run: dotnet fsi build.fsx
+
     - name: Deploy docs
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./output
         publish_branch: gh-pages
         force_orphan: true
-    - name: Examine docs output
-      run: ls -r output 
-    - name: Pack nuget
-      run: dotnet pack -c Release
+
     - name: Publish NuGets (if this version not published before)
       run: dotnet nuget push src/FSharp.Data.Fred/bin/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_KEY }} --skip-duplicate

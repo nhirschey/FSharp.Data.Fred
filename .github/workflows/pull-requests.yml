@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -12,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
 
     env:
       FRED_KEY: ${{ secrets.FRED_KEY }}
@@ -20,23 +24,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('paket.dependencies', 'global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            10.0.x
+          dotnet-version: 10.0.x
 
-      - name: Restore .NET local tools
-        run: dotnet tool restore
-
-      - name: Restore packages
-        run: dotnet paket restore
-
-      - name: Build
-        run: dotnet build --configuration Release
-
-      - name: Run tests
-        run: dotnet test --configuration Release --no-build
-
-      - name: Build docs
-        run: dotnet fsdocs build --eval --clean --properties Configuration=Release
+      - name: Run CI
+        run: dotnet fsi build.fsx
