@@ -3,36 +3,40 @@ name: Build and Test PR
 on:
   pull_request:
     branches:
-    - main
+      - main
 
 jobs:
-  
   build:
-
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest,windows-latest,ubuntu-latest]
+        os: [macos-latest, windows-latest, ubuntu-latest]
 
-    env: 
-      FRED_KEY: ${{ secrets.FRED_KEY }}     
-    
+    env:
+      FRED_KEY: ${{ secrets.FRED_KEY }}
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: |
-          6.0.x
-    - name: Restore .NET local tools
-      run: dotnet tool restore
-    - name: Restore packages
-      run: dotnet paket restore
-    - name: Build
-      run: dotnet build --configuration Release
-    - name: Run tests
-      run: dotnet test
-    - name: build docs
-      run: dotnet fsdocs build --eval --clean --properties Configuration=Release
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            10.0.x
+
+      - name: Restore .NET local tools
+        run: dotnet tool restore
+
+      - name: Restore packages
+        run: dotnet paket restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build
+
+      - name: Build docs
+        run: dotnet fsdocs build --eval --clean --properties Configuration=Release
