@@ -6,10 +6,8 @@
 *)
 
 (*** hide ***)
-//#r "FSharp.Data.dll"
+#r "nuget: FSharp.Data, 8.1.4" // this must be the same as in paket.lock
 #r "../src/FSharp.Data.Fred/bin/Release/netstandard2.0/FSharp.Data.Fred.dll"
-#r "nuget: FSharp.Data, 4.2.4" // this must be the same as in paket.lock
-ignore <| FSharp.Data.WorldBankData.GetDataContext() // Force fsi to load F# Data
 
 (**
 F# Data FRED
@@ -29,7 +27,7 @@ notebooks in [Visual Studio Code](https://code.visualstudio.com/)
 or [Jupyter](https://jupyter.org/), or in F# scripts (`.fsx` files), 
 by referencing the package as follows:
 
-    #r "nuget: FSharp.Data.Fred, {{fsdocs-package-version}}"   
+    #r "nuget: FSharp.Data.Fred"
     #r "nuget: FSharp.Data" //Also load FSharp.Data
 *)
 
