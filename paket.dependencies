@@ -5,7 +5,7 @@ storage: none
 
 nuget coverlet.collector 8.0.1
 nuget FSharp.Core 10.0.103
-nuget FSharp.Data >= 6.0 // If you update this, update the #r reference in docs/index.fsx too. The version must match paket.lock.
+nuget FSharp.Data 8.1.4 // If you update this, update the #r reference in docs/index.fsx too. The version must match paket.lock.
 nuget FsUnit 7.1.1
 nuget Microsoft.NET.Test.Sdk 18.3.0
 nuget NUnit 4.5.1
