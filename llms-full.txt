@@ -1,0 +1,1371 @@
+# FSharp.Data.Fred
+
+## Docs
+
+### [F# Data FRED](https://nhirschey.github.io/FSharp.Data.Fred/index.md)
+
+F# Data FRED
+F# Data FRED is a library for
+FRED database data access
+based on FSharp.Data.
+Short for Federal Reserve Economic Data, FRED is an online database consisting
+of hundreds of thousands of economic data time series from scores of national,
+international, public, and private sources.
+This library uses the FRED API to access the data.
+You can use FSharp.Data.Fred in dotnet interactive
+notebooks in Visual Studio Code
+or Jupyter, or in F# scripts (.fsx files),
+by referencing the package as follows:
+#r "nuget: FSharp.Data.Fred, 0.3.0"
+#r "nuget: FSharp.Data" //Also load FSharp.Data
+
+open FSharp.Data
+open FSharp.Data.Fred
+open System //Usefull to access DateTime
+
+F# Data FRED
+First in order to use the methods you'll need to create a value with type Fred.
+Fred receives an API key as a parameter (string). Get your FRED API key.
+Example:
+let apiKey = "insert API key here"
+Now you can use the created value myFred to access all the methods in the FRED library.
+FRED.Series Module Functions:
+
+Search.
+Info.
+Categories.
+Release.
+Tags.
+Observations.
+
+F# Data FRED: Series.Search
+A collection of economic data series that match the parameters.
+The parameters are the following:
+
+searchText, required.
+The words to match against economic data series.
+
+searchType, optional. Default is SearchType.FullText.
+Determines the type of search to perform.
+One of the following: SearchType.FullText or SearchType.SeriesId.
+
+SearchType.FullText searches series attributes title, units, frequency, and tags by parsing words into stems. 
+This makes it possible for searches like 'Industry' to match series containing related words such as 'Industries'.
+Of course, you can search for multiple words like 'money' and 'stock'. Remember to url encode spaces (e.g. 'money%20stock').
+
+SearchType.SeriesId performs a substring search on series IDs. Searching for 'ex' will find series containing 'ex' anywhere in a series ID.
+'' can be used to anchor searches and match 0 or more of any character. Searching for 'ex' will find series containing 'ex' at the beginning of a series ID.
+Searching for 'ex' will find series containing 'ex' at the end of a series ID. It's also possible to put an '' in the middle of a string.
+'m*sl' finds any series starting with 'm' and ending with 'sl'.
+
+realtimeStart, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+realtimeEnd, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+limit, optional. Default: 1000.
+The maximum number of results to return.
+integer between 1 and 1000.
+
+orderBy, optional. Default: If the value of searchType is SearchType.FullText then the default value of orderBy is SearchOrder.SearchRank. If the value of searchType is SearchType.SeriesId then the default value of orderBy is SearchOrder.SeriesId.
+Order results by values of the specified attribute.
+One of the following:
+SearchOrder.SearchRank SearchOrder.SeriesIdOrder SearchOrder.Title SearchOrder.Units SearchOrder.Frequency SearchOrder.SeasonalAdjustment
+SearchOrder.RealTimeStart SearchOrder.RealTimeEnd SearchOrder.LastUpdated SearchOrder.ObservationStart SearchOrder.ObservationEnd SearchOrder.Popularity SearchOrder.GroupPopularity
+
+sortOrder, optional. Default: If orderBy is equal to SearchOrder.SearchRank or SearchOrder.Popularity, then the default value of sortOrder is SortOrder.Descending. Otherwise, the default sortOrder is SortOrder.Ascending.
+Sort results is ascending or descending order for attribute values specified by orderBy.
+
+Examples:
+Search for "10-Year" text without specifying any optional parameters.
+myFred.Series.Search("10-Year").Summary()
+
+Count of search hits: 10216
+Top 10 results:
+  1. Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis 
+         Id: DGS10      Period: 1962-01-02 to 2026-04-07  Freq: Daily 
+
+  2. 10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity 
+         Id: T10Y2Y     Period: 1976-06-01 to 2026-04-08  Freq: Daily 
+
+  3. Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis 
+         Id: GS10       Period: 1953-04-01 to 2026-03-01  Freq: Monthly 
+
+  4. 10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity 
+         Id: T10Y2YM    Period: 1976-06-01 to 2026-03-01  Freq: Monthly 
+
+  5. Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis 
+         Id: WGS10YR    Period: 1962-01-05 to 2026-04-03  Freq: Weekly, Ending Friday 
+
+  6. Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis 
+         Id: RIFLGFCY10NA Period: 1962-01-01 to 2025-01-01  Freq: Annual 
+
+  7. 10-Year Treasury Constant Maturity Minus 3-Month Treasury Constant Maturity 
+         Id: T10Y3M     Period: 1982-01-04 to 2026-04-08  Freq: Daily 
+
+  8. 10-Year Treasury Constant Maturity Minus 3-Month Treasury Constant Maturity 
+         Id: T10Y3MM    Period: 1982-01-01 to 2026-03-01  Freq: Monthly 
+
+  9. 10-Year Breakeven Inflation Rate 
+         Id: T10YIE     Period: 2003-01-02 to 2026-04-08  Freq: Daily 
+
+ 10. Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis, Inflation-Indexed 
+         Id: DFII10     Period: 2003-01-02 to 2026-04-07  Freq: Daily
+Search for "10-Year" text specifying some optional parameters.
+myFred.Series.Search("10-Year", 
+                     searchType = SearchType.FullText, 
+                     limit = 3, 
+                     orderBy = SearchOrder.GroupPopularity, 
+                     sortOrder = SortOrder.Descending).Summary()
+
+Count of search hits: 10216
+Top 3 results:
+  1. Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis 
+         Id: DGS10      Period: 1962-01-02 to 2026-04-07  Freq: Daily 
+
+  2. Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis 
+         Id: GS10       Period: 1953-04-01 to 2026-03-01  Freq: Monthly 
+
+  3. Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis 
+         Id: WGS10YR    Period: 1962-01-05 to 2026-04-03  Freq: Weekly, Ending Friday
+Search for "Hello World" text that should not match any series.
+myFred.Series.Search("Hello World").Summary()
+
+Count of search hits: 0
+Top 0 results:
+F# Data FRED: Series.Info
+Get the information for an economic data series.
+This method only asks for the series id as a parameter (string)
+Examples:
+Get the information for series id = "GS10"
+myFred.Series.Info "GS10"
+
+val it: JsonProvider<...>.InfoResponse =
+  {
+  "realtime_start": "2026-04-09",
+  "realtime_end": "2026-04-09",
+  "seriess": [
+    {
+      "id": "GS10",
+      "realtime_start": "2026-04-09",
+      "realtime_end": "2026-04-09",
+      "title": "Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis",
+      "observation_start": "1953-04-01",
+      "observation_end": "2026-03-01",
+      "frequency": "Monthly",
+      "frequency_short": "M",
+      "units": "Percent",
+      "units_short": "%",
+      "seasonal...
+F# Data FRED: Series.Categories
+Get the categories for an economic data series.
+The parameters are the following:
+
+id, required.
+The id for a series (string).
+
+realtimeStart, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+realtimeEnd, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+Examples:
+Get the category information for series id = "GS10"
+myFred.Series.Categories "GS10"
+
+val it: JsonProvider<...>.CategoriesResponse =
+  {
+  "categories": [
+    {
+      "id": 115,
+      "name": "Treasury Constant Maturity",
+      "parent_id": 22
+    }
+  ]
+}
+You can also access the category fields with Array.map:
+myFred.Series.Categories("GS10").Categories
+|> Array.map(fun x -> x.Name)
+
+val it: string array = [|"Treasury Constant Maturity"|]
+F# Data FRED: Series.Release
+Get the release for an economic data series.
+The parameters are the following:
+
+id, required.
+The id for a series (string).
+
+realtimeStart, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+realtimeEnd, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+Examples:
+Get the release information for series id = "GS10"
+myFred.Series.Release "GS10"
+
+val it: JsonProvider<...>.ReleaseResponse =
+  {
+  "realtime_start": "2026-04-09",
+  "realtime_end": "2026-04-09",
+  "releases": [
+    {
+      "id": 18,
+      "realtime_start": "2026-04-09",
+      "realtime_end": "2026-04-09",
+      "name": "H.15 Selected Interest Rates",
+      "press_release": true,
+      "link": "http://www.federalreserve.gov/releases/h15/",
+      "notes": "For questions on the data, please contact the data source: https://www.federalreserve.gov/apps/ContactUs/feedback.aspx?refurl=/releases/h15/%\r\nFor questions on FRED functional...
+F# Data FRED: Series.Tags
+Get the FRED tags for a series.
+The parameters are the following:
+
+id, required.
+The id for a series (string).
+
+realtimeStart, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+realtimeEnd, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+orderBy, optional. Default: OrderByTags.SeriesCount.
+Order results by values of the specified attribute.
+One of the following:
+OrderByTags.SeriesCount, OrderByTags.Popularity, OrderByTags.Created, OrderByTags.Name, OrderByTags.GroupId.
+
+sortOrder, optional. Default: SortOrder.Ascending.
+Sort results is ascending or descending order for attribute values specified by orderBy.
+
+Examples:
+Get the first 3 tags information for series id = "GS10" without specifying any optional parameters.
+myFred.Series.Tags("GS10").Tags
+|> Array.truncate 3 
+
+val it: JsonProvider<...>.Tag array =
+  [|{
+  "name": "h15",
+  "group_id": "rls",
+  "notes": "H.15 Selected Interest Rates",
+  "created": "2012-08-16 15:21:17-05",
+  "popularity": 54,
+  "series_count": 276
+};
+    {
+  "name": "10-year",
+  "group_id": "gen",
+  "notes": "",
+  "created": "2012-02-27 10:18:19-06",
+  "popularity": 52,
+  "series_count": 290
+};
+    {
+  "name": "interest rate",
+  "group_id": "gen",
+  "notes": "",
+  "created": "2012-05-29 10:14:19-05",
+  "popularity": 68,
+  "series_count": 1642
+}|]
+Get the first 3 tags information for series id = "GS10" specifying some optional parameters.
+myFred.Series.Tags("GS10", orderBy = OrderByTags.Popularity, sortOrder = SortOrder.Descending).Tags
+|> Array.truncate 3 
+
+val it: JsonProvider<...>.Tag array =
+  [|{
+  "name": "h15",
+  "group_id": "rls",
+  "notes": "H.15 Selected Interest Rates",
+  "created": "2012-08-16 15:21:17-05",
+  "popularity": 54,
+  "series_count": 272
+};
+    {
+  "name": "10-year",
+  "group_id": "gen",
+  "notes": "",
+  "created": "2012-02-27 10:18:19-06",
+  "popularity": 52,
+  "series_count": 300
+};
+    {
+  "name": "interest rate",
+  "group_id": "gen",
+  "notes": "",
+  "created": "2012-05-29 10:14:19-05",
+  "popularity": 68,
+  "series_count": 1616
+}|]
+F# Data FRED: Series.Observations
+Get the observations or data values for an economic data series.
+The parameters are the following:
+
+id, required.
+The id for a series (string).
+
+realtimeStart, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+realtimeEnd, optional. Default: today's date.
+The start of the real-time period. For more information, see Real-Time Periods.
+
+limit, optional. Default: 1000.
+The maximum number of results to return.
+integer between 1 and 1000.
+
+sortOrder, optional. Default: SortOrder.Ascending.
+Sort results is ascending or descending observation date order.
+
+observationStart, optional. Default: DateTime(1776,07,04) (earliest available).
+The start of the observation period. DateTime(yyyy,MM,dd) formatted DateTime.
+
+observationEnd, optional. Default: today's date.   DateTime(9999,12,31) (latest available).
+The end of the observation period. DateTime(yyyy,MM,dd) formatted DateTime.
+
+units, optional. Default: Units.Levels (No transformation).
+A key that indicates a data value transformation.
+One of the following:
+Units.Levels
+Units.Change
+Units.ChangefromYearAgo
+Units.PercentChange
+Units.PercentChangefromYearAgo
+Units.CompoundedAnnualRateofChange
+Units.ContinuouslyCompoundedRateofChange
+Units.ContinuouslyCompoundedAnnualRateofChange
+Units.NaturalLog.
+Unit transformation formulas
+
+frequency, optional.
+An optional parameter that indicates a lower frequency to aggregate values to.
+The FRED frequency aggregation feature converts higher frequency data series into lower frequency
+data series (e.g. converts a monthly data series into an annual data series).
+In FRED, the highest frequency data is daily, and the lowest frequency data is annual.
+There are 3 aggregation methods available- average, sum, and end of period.
+See the aggregation_method parameter.
+One of the following:
+Frequency.Daily, Frequency.Weekly, Frequency.Biweekly, Frequency.Monthly, Frequency.Quarterly,
+Frequency.Semiannual, Frequency.Annual, Frequency.WeeklyEndingFriday,
+Frequency.WeeklyEndingThursday, Frequency.WeeklyEndingWednesday, Frequency.WeeklyEndingTuesday,
+Frequency.WeeklyEndingMonday, Frequency.WeeklyEndingSunday, Frequency.WeeklyEndingSaturday,
+Frequency.BiweeklyEndingWednesday, Frequency.BiweeklyEndingMonday.
+
+aggMethod, optional. Default: AggMethod.Average.
+A key that indicates the aggregation method used for frequency aggregation.
+This parameter has no affect if the frequency parameter is not set.
+One of the following:
+AggMethod.Average, AggMethod.Sum, AggMethod.EndOfPeriod.
+
+Examples:
+Get the observations for "GS10" series without specifying any optional parameters.
+myFred.Series.Observations("GS10").Observations
+|> Seq.truncate 3 
+
+val it: JsonProvider<...>.Observation seq =
+  seq
+    [{
+  "realtime_start": "2026-04-09",
+  "realtime_end": "2026-04-09",
+  "date": "1953-04-01",
+  "value": "2.83"
+};
+     {
+  "realtime_start": "2026-04-09",
+  "realtime_end": "2026-04-09",
+  "date": "1953-05-01",
+  "value": "3.05"
+};
+     {
+  "realtime_start": "2026-04-09",
+  "realtime_end": "2026-04-09",
+  "date": "1953-06-01",
+  "value": "3.11"
+}]
+Get the observations for "DTP10J25" with a semi-annual frequency.
+myFred.Series.Observations("DTP10J25", frequency = Frequency.Semiannual).Observations
+|> Seq.truncate 3 
+
+val it: JsonProvider<...>.Observation seq =
+  seq
+    [{
+  "realtime_start": "2026-04-09",
+  "realtime_end": "2026-04-09",
+  "date": "2015-01-01",
+  "value": "."
+};
+     {
+  "realtime_start": "2026-04-09",
+  "realtime_end": "2026-04-09",
+  "date": "2015-07-01",
+  "value": "0.624"
+};
+     {
+  "realtime_start": "2026-04-09",
+  "realtime_end": "2026-04-09",
+  "date": "2016-01-01",
+  "value": "0.315"
+}]
+
+## API Reference
+
+### [FSharp.Data.Fred](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred.html)
+
+QueryParameters 
+Fred 
+Search 
+Series
+
+### [QueryParameters](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters.html)
+
+QueryParameters 
+ Contains types for specifying search query parameters.  
+QueryParameters.AggMethod 
+AggMethod 
+QueryParameters.Frequency 
+Frequency 
+QueryParameters.OrderByTags 
+OrderByTags 
+QueryParameters.SearchOrder 
+SearchOrder 
+QueryParameters.SearchType 
+SearchType 
+QueryParameters.SortOrder 
+SortOrder 
+QueryParameters.Units 
+Units
+
+### [AggMethod](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-aggmethod.html)
+
+AggMethod 
+
+   A key that indicates the aggregation method used for frequency aggregation. 
+   This parameter has no affect if the frequency parameter is not set.   
+    
+AggMethod.IsSum 
+IsSum 
+AggMethod.IsEndOfPeriod 
+IsEndOfPeriod 
+AggMethod.IsAverage 
+IsAverage 
+AggMethod.Average 
+Average 
+AggMethod.Sum 
+Sum 
+AggMethod.EndOfPeriod 
+EndOfPeriod
+
+### [AggMethod.IsSum](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-aggmethod.html#IsSum)
+
+AggMethod.IsSum 
+IsSum
+
+### [AggMethod.IsEndOfPeriod](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-aggmethod.html#IsEndOfPeriod)
+
+AggMethod.IsEndOfPeriod 
+IsEndOfPeriod
+
+### [AggMethod.IsAverage](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-aggmethod.html#IsAverage)
+
+AggMethod.IsAverage 
+IsAverage
+
+### [AggMethod.Average](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-aggmethod.html#Average)
+
+AggMethod.Average 
+Average 
+ Computes the average to get the observation values for the desired frequency.
+
+### [AggMethod.Sum](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-aggmethod.html#Sum)
+
+AggMethod.Sum 
+Sum 
+ Computes the sum to get the observation values for the desired frequency.
+
+### [AggMethod.EndOfPeriod](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-aggmethod.html#EndOfPeriod)
+
+AggMethod.EndOfPeriod 
+EndOfPeriod 
+ Set the end of period value to get the observation values for the desired frequency.
+
+### [Frequency](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html)
+
+Frequency 
+
+   The FRED frequency aggregation feature converts higher frequency data series into lower frequency 
+   data series (e.g. converts a monthly data series into an annual data series). 
+   In FRED, the highest frequency data is daily, and the lowest frequency data is annual.  
+  
+Frequency.IsDefault 
+IsDefault 
+Frequency.IsWeeklyEndingThursday 
+IsWeeklyEndingThursday 
+Frequency.IsBiweeklyEndingWednesday 
+IsBiweeklyEndingWednesday 
+Frequency.IsBiweeklyEndingMonday 
+IsBiweeklyEndingMonday 
+Frequency.IsWeeklyEndingWednesday 
+IsWeeklyEndingWednesday 
+Frequency.IsWeeklyEndingMonday 
+IsWeeklyEndingMonday 
+Frequency.IsAnnual 
+IsAnnual 
+Frequency.IsWeekly 
+IsWeekly 
+Frequency.IsDaily 
+IsDaily 
+Frequency.IsWeeklyEndingFriday 
+IsWeeklyEndingFriday 
+Frequency.IsWeeklyEndingSaturday 
+IsWeeklyEndingSaturday 
+Frequency.IsWeeklyEndingSunday 
+IsWeeklyEndingSunday 
+Frequency.IsSemiannual 
+IsSemiannual 
+Frequency.IsBiweekly 
+IsBiweekly 
+Frequency.IsWeeklyEndingTuesday 
+IsWeeklyEndingTuesday 
+Frequency.IsMonthly 
+IsMonthly 
+Frequency.IsQuarterly 
+IsQuarterly 
+Frequency.Daily 
+Daily 
+Frequency.Weekly 
+Weekly 
+Frequency.Biweekly 
+Biweekly 
+Frequency.Monthly 
+Monthly 
+Frequency.Quarterly 
+Quarterly 
+Frequency.Semiannual 
+Semiannual 
+Frequency.Annual 
+Annual 
+Frequency.WeeklyEndingFriday 
+WeeklyEndingFriday 
+Frequency.WeeklyEndingThursday 
+WeeklyEndingThursday 
+Frequency.WeeklyEndingWednesday 
+WeeklyEndingWednesday 
+Frequency.WeeklyEndingTuesday 
+WeeklyEndingTuesday 
+Frequency.WeeklyEndingMonday 
+WeeklyEndingMonday 
+Frequency.WeeklyEndingSunday 
+WeeklyEndingSunday 
+Frequency.WeeklyEndingSaturday 
+WeeklyEndingSaturday 
+Frequency.BiweeklyEndingWednesday 
+BiweeklyEndingWednesday 
+Frequency.BiweeklyEndingMonday 
+BiweeklyEndingMonday 
+Frequency.Default 
+Default
+
+### [Frequency.IsDefault](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsDefault)
+
+Frequency.IsDefault 
+IsDefault
+
+### [Frequency.IsWeeklyEndingThursday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsWeeklyEndingThursday)
+
+Frequency.IsWeeklyEndingThursday 
+IsWeeklyEndingThursday
+
+### [Frequency.IsBiweeklyEndingWednesday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsBiweeklyEndingWednesday)
+
+Frequency.IsBiweeklyEndingWednesday 
+IsBiweeklyEndingWednesday
+
+### [Frequency.IsBiweeklyEndingMonday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsBiweeklyEndingMonday)
+
+Frequency.IsBiweeklyEndingMonday 
+IsBiweeklyEndingMonday
+
+### [Frequency.IsWeeklyEndingWednesday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsWeeklyEndingWednesday)
+
+Frequency.IsWeeklyEndingWednesday 
+IsWeeklyEndingWednesday
+
+### [Frequency.IsWeeklyEndingMonday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsWeeklyEndingMonday)
+
+Frequency.IsWeeklyEndingMonday 
+IsWeeklyEndingMonday
+
+### [Frequency.IsAnnual](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsAnnual)
+
+Frequency.IsAnnual 
+IsAnnual
+
+### [Frequency.IsWeekly](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsWeekly)
+
+Frequency.IsWeekly 
+IsWeekly
+
+### [Frequency.IsDaily](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsDaily)
+
+Frequency.IsDaily 
+IsDaily
+
+### [Frequency.IsWeeklyEndingFriday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsWeeklyEndingFriday)
+
+Frequency.IsWeeklyEndingFriday 
+IsWeeklyEndingFriday
+
+### [Frequency.IsWeeklyEndingSaturday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsWeeklyEndingSaturday)
+
+Frequency.IsWeeklyEndingSaturday 
+IsWeeklyEndingSaturday
+
+### [Frequency.IsWeeklyEndingSunday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsWeeklyEndingSunday)
+
+Frequency.IsWeeklyEndingSunday 
+IsWeeklyEndingSunday
+
+### [Frequency.IsSemiannual](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsSemiannual)
+
+Frequency.IsSemiannual 
+IsSemiannual
+
+### [Frequency.IsBiweekly](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsBiweekly)
+
+Frequency.IsBiweekly 
+IsBiweekly
+
+### [Frequency.IsWeeklyEndingTuesday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsWeeklyEndingTuesday)
+
+Frequency.IsWeeklyEndingTuesday 
+IsWeeklyEndingTuesday
+
+### [Frequency.IsMonthly](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsMonthly)
+
+Frequency.IsMonthly 
+IsMonthly
+
+### [Frequency.IsQuarterly](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#IsQuarterly)
+
+Frequency.IsQuarterly 
+IsQuarterly
+
+### [Frequency.Daily](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#Daily)
+
+Frequency.Daily 
+Daily
+
+### [Frequency.Weekly](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#Weekly)
+
+Frequency.Weekly 
+Weekly
+
+### [Frequency.Biweekly](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#Biweekly)
+
+Frequency.Biweekly 
+Biweekly
+
+### [Frequency.Monthly](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#Monthly)
+
+Frequency.Monthly 
+Monthly
+
+### [Frequency.Quarterly](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#Quarterly)
+
+Frequency.Quarterly 
+Quarterly
+
+### [Frequency.Semiannual](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#Semiannual)
+
+Frequency.Semiannual 
+Semiannual
+
+### [Frequency.Annual](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#Annual)
+
+Frequency.Annual 
+Annual
+
+### [Frequency.WeeklyEndingFriday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#WeeklyEndingFriday)
+
+Frequency.WeeklyEndingFriday 
+WeeklyEndingFriday
+
+### [Frequency.WeeklyEndingThursday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#WeeklyEndingThursday)
+
+Frequency.WeeklyEndingThursday 
+WeeklyEndingThursday
+
+### [Frequency.WeeklyEndingWednesday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#WeeklyEndingWednesday)
+
+Frequency.WeeklyEndingWednesday 
+WeeklyEndingWednesday
+
+### [Frequency.WeeklyEndingTuesday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#WeeklyEndingTuesday)
+
+Frequency.WeeklyEndingTuesday 
+WeeklyEndingTuesday
+
+### [Frequency.WeeklyEndingMonday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#WeeklyEndingMonday)
+
+Frequency.WeeklyEndingMonday 
+WeeklyEndingMonday
+
+### [Frequency.WeeklyEndingSunday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#WeeklyEndingSunday)
+
+Frequency.WeeklyEndingSunday 
+WeeklyEndingSunday
+
+### [Frequency.WeeklyEndingSaturday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#WeeklyEndingSaturday)
+
+Frequency.WeeklyEndingSaturday 
+WeeklyEndingSaturday
+
+### [Frequency.BiweeklyEndingWednesday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#BiweeklyEndingWednesday)
+
+Frequency.BiweeklyEndingWednesday 
+BiweeklyEndingWednesday
+
+### [Frequency.BiweeklyEndingMonday](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#BiweeklyEndingMonday)
+
+Frequency.BiweeklyEndingMonday 
+BiweeklyEndingMonday
+
+### [Frequency.Default](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html#Default)
+
+Frequency.Default 
+Default
+
+### [OrderByTags](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html)
+
+OrderByTags 
+
+   Order Tags by values of the specified attribute.
+    
+OrderByTags.IsGroupId 
+IsGroupId 
+OrderByTags.IsCreated 
+IsCreated 
+OrderByTags.IsName 
+IsName 
+OrderByTags.IsPopularity 
+IsPopularity 
+OrderByTags.IsSeriesCount 
+IsSeriesCount 
+OrderByTags.SeriesCount 
+SeriesCount 
+OrderByTags.Popularity 
+Popularity 
+OrderByTags.Created 
+Created 
+OrderByTags.Name 
+Name 
+OrderByTags.GroupId 
+GroupId
+
+### [OrderByTags.IsGroupId](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#IsGroupId)
+
+OrderByTags.IsGroupId 
+IsGroupId
+
+### [OrderByTags.IsCreated](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#IsCreated)
+
+OrderByTags.IsCreated 
+IsCreated
+
+### [OrderByTags.IsName](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#IsName)
+
+OrderByTags.IsName 
+IsName
+
+### [OrderByTags.IsPopularity](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#IsPopularity)
+
+OrderByTags.IsPopularity 
+IsPopularity
+
+### [OrderByTags.IsSeriesCount](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#IsSeriesCount)
+
+OrderByTags.IsSeriesCount 
+IsSeriesCount
+
+### [OrderByTags.SeriesCount](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#SeriesCount)
+
+OrderByTags.SeriesCount 
+SeriesCount 
+ Order by number of series per tag.
+
+### [OrderByTags.Popularity](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#Popularity)
+
+OrderByTags.Popularity 
+Popularity 
+ Order by tag popularity
+
+### [OrderByTags.Created](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#Created)
+
+OrderByTags.Created 
+Created 
+ Order by created date
+
+### [OrderByTags.Name](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#Name)
+
+OrderByTags.Name 
+Name 
+ Order by tag name
+
+### [OrderByTags.GroupId](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html#GroupId)
+
+OrderByTags.GroupId 
+GroupId 
+ Order by group id
+
+### [SearchOrder](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html)
+
+SearchOrder 
+
+    Order results by values of the specified attribute. 
+    
+SearchOrder.IsSeasonalAdjustment 
+IsSeasonalAdjustment 
+SearchOrder.IsLastUpdated 
+IsLastUpdated 
+SearchOrder.IsObservationEnd 
+IsObservationEnd 
+SearchOrder.IsRealTimeStart 
+IsRealTimeStart 
+SearchOrder.IsTitle 
+IsTitle 
+SearchOrder.IsPopularity 
+IsPopularity 
+SearchOrder.IsRealTimeEnd 
+IsRealTimeEnd 
+SearchOrder.IsObservationStart 
+IsObservationStart 
+SearchOrder.IsSeriesIdOrder 
+IsSeriesIdOrder 
+SearchOrder.IsUnits 
+IsUnits 
+SearchOrder.IsSearchRank 
+IsSearchRank 
+SearchOrder.IsGroupPopularity 
+IsGroupPopularity 
+SearchOrder.IsFrequency 
+IsFrequency 
+SearchOrder.SearchRank 
+SearchRank 
+SearchOrder.SeriesIdOrder 
+SeriesIdOrder 
+SearchOrder.Title 
+Title 
+SearchOrder.Units 
+Units 
+SearchOrder.Frequency 
+Frequency 
+SearchOrder.SeasonalAdjustment 
+SeasonalAdjustment 
+SearchOrder.RealTimeStart 
+RealTimeStart 
+SearchOrder.RealTimeEnd 
+RealTimeEnd 
+SearchOrder.LastUpdated 
+LastUpdated 
+SearchOrder.ObservationStart 
+ObservationStart 
+SearchOrder.ObservationEnd 
+ObservationEnd 
+SearchOrder.Popularity 
+Popularity 
+SearchOrder.GroupPopularity 
+GroupPopularity
+
+### [SearchOrder.IsSeasonalAdjustment](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsSeasonalAdjustment)
+
+SearchOrder.IsSeasonalAdjustment 
+IsSeasonalAdjustment
+
+### [SearchOrder.IsLastUpdated](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsLastUpdated)
+
+SearchOrder.IsLastUpdated 
+IsLastUpdated
+
+### [SearchOrder.IsObservationEnd](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsObservationEnd)
+
+SearchOrder.IsObservationEnd 
+IsObservationEnd
+
+### [SearchOrder.IsRealTimeStart](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsRealTimeStart)
+
+SearchOrder.IsRealTimeStart 
+IsRealTimeStart
+
+### [SearchOrder.IsTitle](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsTitle)
+
+SearchOrder.IsTitle 
+IsTitle
+
+### [SearchOrder.IsPopularity](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsPopularity)
+
+SearchOrder.IsPopularity 
+IsPopularity
+
+### [SearchOrder.IsRealTimeEnd](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsRealTimeEnd)
+
+SearchOrder.IsRealTimeEnd 
+IsRealTimeEnd
+
+### [SearchOrder.IsObservationStart](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsObservationStart)
+
+SearchOrder.IsObservationStart 
+IsObservationStart
+
+### [SearchOrder.IsSeriesIdOrder](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsSeriesIdOrder)
+
+SearchOrder.IsSeriesIdOrder 
+IsSeriesIdOrder
+
+### [SearchOrder.IsUnits](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsUnits)
+
+SearchOrder.IsUnits 
+IsUnits
+
+### [SearchOrder.IsSearchRank](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsSearchRank)
+
+SearchOrder.IsSearchRank 
+IsSearchRank
+
+### [SearchOrder.IsGroupPopularity](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsGroupPopularity)
+
+SearchOrder.IsGroupPopularity 
+IsGroupPopularity
+
+### [SearchOrder.IsFrequency](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#IsFrequency)
+
+SearchOrder.IsFrequency 
+IsFrequency
+
+### [SearchOrder.SearchRank](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#SearchRank)
+
+SearchOrder.SearchRank 
+SearchRank 
+ Order search by rank.
+
+### [SearchOrder.SeriesIdOrder](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#SeriesIdOrder)
+
+SearchOrder.SeriesIdOrder 
+SeriesIdOrder 
+ Order search by id numbering order
+
+### [SearchOrder.Title](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#Title)
+
+SearchOrder.Title 
+Title 
+ Order search by title
+
+### [SearchOrder.Units](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#Units)
+
+SearchOrder.Units 
+Units 
+ Order search by units
+
+### [SearchOrder.Frequency](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#Frequency)
+
+SearchOrder.Frequency 
+Frequency 
+ Order search by frequency
+
+### [SearchOrder.SeasonalAdjustment](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#SeasonalAdjustment)
+
+SearchOrder.SeasonalAdjustment 
+SeasonalAdjustment 
+ Order search by seasonal adjustment
+
+### [SearchOrder.RealTimeStart](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#RealTimeStart)
+
+SearchOrder.RealTimeStart 
+RealTimeStart 
+ Order search by most recent real time start
+
+### [SearchOrder.RealTimeEnd](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#RealTimeEnd)
+
+SearchOrder.RealTimeEnd 
+RealTimeEnd 
+ Order search by most recent real time end
+
+### [SearchOrder.LastUpdated](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#LastUpdated)
+
+SearchOrder.LastUpdated 
+LastUpdated 
+ Order search by most recently updated series
+
+### [SearchOrder.ObservationStart](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#ObservationStart)
+
+SearchOrder.ObservationStart 
+ObservationStart 
+ Order search by most recent observation start date
+
+### [SearchOrder.ObservationEnd](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#ObservationEnd)
+
+SearchOrder.ObservationEnd 
+ObservationEnd 
+ Order search by most recent observation end date
+
+### [SearchOrder.Popularity](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#Popularity)
+
+SearchOrder.Popularity 
+Popularity 
+ Order search by popularity
+
+### [SearchOrder.GroupPopularity](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html#GroupPopularity)
+
+SearchOrder.GroupPopularity 
+GroupPopularity 
+ Order search by group popularity
+
+### [SearchType](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchtype.html)
+
+SearchType 
+
+   Represents the type of search to perform.
+    
+SearchType.IsFullText 
+IsFullText 
+SearchType.IsSeriesId 
+IsSeriesId 
+SearchType.FullText 
+FullText 
+SearchType.SeriesId 
+SeriesId
+
+### [SearchType.IsFullText](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchtype.html#IsFullText)
+
+SearchType.IsFullText 
+IsFullText
+
+### [SearchType.IsSeriesId](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchtype.html#IsSeriesId)
+
+SearchType.IsSeriesId 
+IsSeriesId
+
+### [SearchType.FullText](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchtype.html#FullText)
+
+SearchType.FullText 
+FullText 
+
+ Searches series attributes title, units, frequency, and tags by parsing words into stems.
+ This makes it possible for searches like 'Industry' to match series containing related words such as 'Industries'. 
+ Of course, you can search for multiple words like 'money' and 'stock'. Remember to url encode spaces (e.g. <code>money%20stock</code>).
+
+### [SearchType.SeriesId](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchtype.html#SeriesId)
+
+SearchType.SeriesId 
+SeriesId 
+ Performs a substring search on series IDs. Searching for 'ex' will find series containing 'ex' anywhere in a series ID.
+ '*' can be used to anchor searches and match 0 or more of any character. Searching for 'ex*' will find series containing 'ex' at the beginning of a series ID.
+ Searching for '*ex' will find series containing 'ex' at the end of a series ID. It's also possible to put an '*' in the middle of a string.
+ 'm*sl' finds any series starting with 'm' and ending with 'sl'.
+
+### [SortOrder](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-sortorder.html)
+
+SortOrder 
+
+    Sort results is ascending or descending observation date order.
+    
+SortOrder.IsDescending 
+IsDescending 
+SortOrder.IsAscending 
+IsAscending 
+SortOrder.Ascending 
+Ascending 
+SortOrder.Descending 
+Descending
+
+### [SortOrder.IsDescending](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-sortorder.html#IsDescending)
+
+SortOrder.IsDescending 
+IsDescending
+
+### [SortOrder.IsAscending](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-sortorder.html#IsAscending)
+
+SortOrder.IsAscending 
+IsAscending
+
+### [SortOrder.Ascending](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-sortorder.html#Ascending)
+
+SortOrder.Ascending 
+Ascending 
+ Sort results in ascending order.
+
+### [SortOrder.Descending](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-sortorder.html#Descending)
+
+SortOrder.Descending 
+Descending 
+ Sort results in descending order.
+
+### [Units](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html)
+
+Units 
+
+   A key that indicates a data value transformation.
+    
+Units.IsChangeFromYearAgo 
+IsChangeFromYearAgo 
+Units.IsContinuouslyCompoundedAnnualRateofChange 
+IsContinuouslyCompoundedAnnualRateofChange 
+Units.IsNaturalLog 
+IsNaturalLog 
+Units.IsCompoundedAnnualRateofChange 
+IsCompoundedAnnualRateofChange 
+Units.IsPercentChangeFromYearAgo 
+IsPercentChangeFromYearAgo 
+Units.IsChange 
+IsChange 
+Units.IsLevels 
+IsLevels 
+Units.IsPercentChange 
+IsPercentChange 
+Units.IsContinuouslyCompoundedRateofChange 
+IsContinuouslyCompoundedRateofChange 
+Units.Levels 
+Levels 
+Units.Change 
+Change 
+Units.ChangeFromYearAgo 
+ChangeFromYearAgo 
+Units.PercentChange 
+PercentChange 
+Units.PercentChangeFromYearAgo 
+PercentChangeFromYearAgo 
+Units.CompoundedAnnualRateofChange 
+CompoundedAnnualRateofChange 
+Units.ContinuouslyCompoundedRateofChange 
+ContinuouslyCompoundedRateofChange 
+Units.ContinuouslyCompoundedAnnualRateofChange 
+ContinuouslyCompoundedAnnualRateofChange 
+Units.NaturalLog 
+NaturalLog
+
+### [Units.IsChangeFromYearAgo](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#IsChangeFromYearAgo)
+
+Units.IsChangeFromYearAgo 
+IsChangeFromYearAgo
+
+### [Units.IsContinuouslyCompoundedAnnualRateofChange](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#IsContinuouslyCompoundedAnnualRateofChange)
+
+Units.IsContinuouslyCompoundedAnnualRateofChange 
+IsContinuouslyCompoundedAnnualRateofChange
+
+### [Units.IsNaturalLog](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#IsNaturalLog)
+
+Units.IsNaturalLog 
+IsNaturalLog
+
+### [Units.IsCompoundedAnnualRateofChange](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#IsCompoundedAnnualRateofChange)
+
+Units.IsCompoundedAnnualRateofChange 
+IsCompoundedAnnualRateofChange
+
+### [Units.IsPercentChangeFromYearAgo](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#IsPercentChangeFromYearAgo)
+
+Units.IsPercentChangeFromYearAgo 
+IsPercentChangeFromYearAgo
+
+### [Units.IsChange](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#IsChange)
+
+Units.IsChange 
+IsChange
+
+### [Units.IsLevels](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#IsLevels)
+
+Units.IsLevels 
+IsLevels
+
+### [Units.IsPercentChange](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#IsPercentChange)
+
+Units.IsPercentChange 
+IsPercentChange
+
+### [Units.IsContinuouslyCompoundedRateofChange](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#IsContinuouslyCompoundedRateofChange)
+
+Units.IsContinuouslyCompoundedRateofChange 
+IsContinuouslyCompoundedRateofChange
+
+### [Units.Levels](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#Levels)
+
+Units.Levels 
+Levels 
+ Observation(t), default.
+
+### [Units.Change](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#Change)
+
+Units.Change 
+Change 
+ Observation(t) - Observation(t-1)
+
+### [Units.ChangeFromYearAgo](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#ChangeFromYearAgo)
+
+Units.ChangeFromYearAgo 
+ChangeFromYearAgo 
+ Observation(t) - Observation(t-#ObsPerYear)
+
+### [Units.PercentChange](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#PercentChange)
+
+Units.PercentChange 
+PercentChange 
+ ((Observation(t)/Observation(t-1)) - 1) * 100
+
+### [Units.PercentChangeFromYearAgo](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#PercentChangeFromYearAgo)
+
+Units.PercentChangeFromYearAgo 
+PercentChangeFromYearAgo 
+ ((Observation(t)/Observation(t-#ObsPerYear)) - 1) * 100
+
+### [Units.CompoundedAnnualRateofChange](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#CompoundedAnnualRateofChange)
+
+Units.CompoundedAnnualRateofChange 
+CompoundedAnnualRateofChange 
+ (((Observation(t)/Observation(t-1)) ** (#ObsPerYear)) - 1) * 100
+
+### [Units.ContinuouslyCompoundedRateofChange](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#ContinuouslyCompoundedRateofChange)
+
+Units.ContinuouslyCompoundedRateofChange 
+ContinuouslyCompoundedRateofChange 
+ (ln(Observation(t)) - ln(Observation(t-1))) * 100
+
+### [Units.ContinuouslyCompoundedAnnualRateofChange](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#ContinuouslyCompoundedAnnualRateofChange)
+
+Units.ContinuouslyCompoundedAnnualRateofChange 
+ContinuouslyCompoundedAnnualRateofChange 
+ ((ln(Observation(t)) - ln(Observation(t-1))) * 100) * #ObsPerYear
+
+### [Units.NaturalLog](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html#NaturalLog)
+
+Units.NaturalLog 
+NaturalLog 
+ ln(Observation(t))
+
+### [Fred](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-fred.html)
+
+Fred 
+
+   Represents a type for accessing the Fred API.
+   You must provide an api key.
+   
+Fred.``.ctor`` 
+``.ctor`` 
+Fred.Key 
+Key 
+Fred.Series 
+Series 
+Fred.loadKey 
+loadKey
+
+### [Fred.``.ctor``](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-fred.html#``.ctor``)
+
+Fred.``.ctor`` 
+``.ctor``
+
+### [Fred.Key](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-fred.html#Key)
+
+Fred.Key 
+Key 
+ Fred API key
+
+### [Fred.Series](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-fred.html#Series)
+
+Fred.Series 
+Series 
+ Represents a Fred data series.
+
+### [Fred.loadKey](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-fred.html#loadKey)
+
+Fred.loadKey 
+loadKey 
+ Loads a Fred api key from a json file.
+
+### [Search](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-search.html)
+
+Search 
+ 
+Search.``.ctor`` 
+``.ctor`` 
+Search.Summary 
+Summary 
+Search.Results 
+Results
+
+### [Search.``.ctor``](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-search.html#``.ctor``)
+
+Search.``.ctor`` 
+``.ctor``
+
+### [Search.Summary](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-search.html#Summary)
+
+Search.Summary 
+Summary
+
+### [Search.Results](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-search.html#Results)
+
+Search.Results 
+Results
+
+### [Series](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-series.html)
+
+Series 
+ A data series. 
+Series.``.ctor`` 
+``.ctor`` 
+Series.Categories 
+Categories 
+Series.Info 
+Info 
+Series.Observations 
+Observations 
+Series.Release 
+Release 
+Series.Search 
+Search 
+Series.Tags 
+Tags
+
+### [Series.``.ctor``](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-series.html#``.ctor``)
+
+Series.``.ctor`` 
+``.ctor``
+
+### [Series.Categories](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-series.html#Categories)
+
+Series.Categories 
+Categories 
+ Get the categories for an economic data series.
+
+### [Series.Info](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-series.html#Info)
+
+Series.Info 
+Info 
+ Get the information for an economic data series.
+
+### [Series.Observations](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-series.html#Observations)
+
+Series.Observations 
+Observations 
+ Get the observations or data values for an economic data series.
+
+### [Series.Release](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-series.html#Release)
+
+Series.Release 
+Release 
+ Get the release for an economic data series.
+
+### [Series.Search](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-series.html#Search)
+
+Series.Search 
+Search 
+ Get economic data series that match search text.
+
+### [Series.Tags](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-series.html#Tags)
+
+Series.Tags 
+Tags 
+ Get the FRED tags for a series.
+

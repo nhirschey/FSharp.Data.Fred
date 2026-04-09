@@ -1,0 +1,19 @@
+# FSharp.Data.Fred
+
+## Docs
+
+- [F# Data FRED](https://nhirschey.github.io/FSharp.Data.Fred/index.md)
+## API Reference
+
+- [FSharp.Data.Fred](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred.html)
+- [QueryParameters](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters.html)
+- [AggMethod](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-aggmethod.html)
+- [Frequency](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-frequency.html)
+- [OrderByTags](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-orderbytags.html)
+- [SearchOrder](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchorder.html)
+- [SearchType](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-searchtype.html)
+- [SortOrder](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-sortorder.html)
+- [Units](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-queryparameters-units.html)
+- [Fred](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-fred.html)
+- [Search](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-search.html)
+- [Series](https://nhirschey.github.io/FSharp.Data.Fred/reference/fsharp-data-fred-series.html)
